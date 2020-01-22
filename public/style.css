@@ -1,0 +1,27 @@
+#tablero {
+    position: absolute;
+    left: 40px;
+    top: 150px;
+    width: 900px;
+    height: 500px;
+    background-color: aliceblue;
+}
+
+#login {
+    position: absolute;
+    left: 40px;
+    top: 50px;
+}
+
+
+#ranking {
+
+    position: absolute;
+    left: 990px;
+    top: 150px;
+    width: 300px;
+    height: 500px;
+    background-color: beige;
+
+
+}

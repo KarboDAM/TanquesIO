@@ -1,5 +1,6 @@
 var express = require('express');
 var app = express();
+let usuariosbd = [];
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 
@@ -52,7 +53,7 @@ if(err) {
 
 io.sockets.on('connection', function(socket) {
     console.log("se ha conectado alguien desde "+socket.handshake.address);
-
+    //Cuando se conecta alguien le mandamos los usurios al ranking.
     Usuario.find({}, (err,usuarios) =>{
         if(err) {
             console.log(`Error al intentar obtener los usuarios: ${err}`)
@@ -63,34 +64,73 @@ io.sockets.on('connection', function(socket) {
     });
     
 	socket.on('datos', function(datos) {
+        //Cuando meten datos para acceder un usuario--->
+
+
         console.log(`El usuario se llama ${datos.username} con contraseña ${datos.password}`);
         
         let usuario = new Usuario();
         usuario._id = datos.username;
         usuario.password = datos.password;
         usuario.puntuacion = 0;
-        
 
-        usuario.save((err,usuarioGuardado) => {
+        //Compruebo si el usuario introducido está en la bd
+        Usuario.find({ $and: [ { _id: usuario._id } , { password: usuario.password } ] }, (err,usuarios) =>{
             if(err) {
-                console.log(`Error al intentar guardar en la bd: ${err}`)
+                console.log(`Error al intentar obtener los usuarios: ${err}`)
             } else {
-                console.log({usuario: usuarioGuardado});
-                Usuario.find({}, (err,usuarios) =>{
-                    if(err) {
-                        console.log(`Error al intentar obtener los usuarios: ${err}`)
-                    } else {
-                        console.log({usuarios});
-                        io.emit('datosusuarios',usuarios);
-                    }
-                });
-            }    
-        });  
+                console.log(`Resultado de la busqueda: ${usuarios} que son  ${usuarios.length}  numero de usuarios` );
+                usuariosbd=usuarios;
+
+                if(usuariosbd.length == 0) { //No esxite ningun usuario en la bd con esos datos, lo guardamos
+                    usuario.save((err,usuarioGuardado) => {
+                        if(err) {
+                            console.log(`Error al intentar guardar en la bd: ${err}`)
+                            //Acceder if(err==)---->
+                            let error = err.toString();
+                            console.log(error.substring(12,18));
+                            if( error.substring(12,18) == "E11000" ) {  // Si lo intentamos guardar pero ya existe el nombre
+                                console.log("USUARIO YA EXISTE EN LA BD, CONTRASEÑA INCORRECTA")
+                            }
+                        } else { //Ha podido guardar, ergo mandamos los usuarios a los clientes incluyendo el nuevo
+                            console.log({usuario: usuarioGuardado});
+                            Usuario.find({}, (err,usuarios) =>{
+                                if(err) {
+                                    console.log(`Error al intentar obtener los usuarios: ${err}`)
+                                } else {
+                                    console.log({usuarios});
+                                    io.emit('datosusuarios',usuarios);
+                                }
+                            });
+                            //Acceder----> Crear tanque para este nuevo usuario
+
+
+                        }    
+                    }); 
+        
+                } else { //Existe ese usuario con ese nombre y contraseña
+        
+                    //Acceder-----> Crear tanque para ese usuario
+                } 
+            }
+        });
     });
-    
-    
-	
 });
+
+function accederJuego() {
+
+//Meter un nuevo tanque al juego.
+//Codigo que genera tanque de ese jugador
+
+//Codigo que manda ese tanque a los clientes---->
+
+io.emit('newtanque',tanque);
+
+
+
+
+
+}
 
 
 

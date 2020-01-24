@@ -22,3 +22,12 @@ function mostrarUsuarios(usuarios){
 
 }
 
+//Cuando el server envia un jugador a los clientes
+socket.on('newjugador',function(jugador){
+
+    posTX= jugador.mitanque.posx;
+    posTY= jugador.mitanque.posx;
+
+    $("#tanque").append(Ssadjsdfsdfsadju)
+});
+

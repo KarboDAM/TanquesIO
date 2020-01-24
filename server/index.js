@@ -132,6 +132,7 @@ io.emit('newjugador',jugador);
 
 
 
+
 }
 
 

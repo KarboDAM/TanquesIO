@@ -117,11 +117,11 @@ io.sockets.on('connection', function(socket) {
     });
 });
 
-function accederJuego(¿jugador?) {
+function accederJuego(jugador) {
 
 //Meter un nuevo tanque al juego.
 //Codigo que genera tanque de ese jugador 
-jugador.newtanque(datos de ese tanque);
+jugador.newtanque(datos);
 
 
 //Codigo que manda ese tanque a los clientes---->

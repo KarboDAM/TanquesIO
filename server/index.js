@@ -3,6 +3,7 @@ var app = express();
 let usuariosbd = [];
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
+let jugadores = [];
 
 
 // npm i -S -body-parser ===> 
@@ -60,6 +61,7 @@ io.sockets.on('connection', function(socket) {
         } else {
             console.log({usuarios});
             io.emit('datosusuarios',usuarios);
+            
         }
     });
     
@@ -102,30 +104,41 @@ io.sockets.on('connection', function(socket) {
                                     io.emit('datosusuarios',usuarios);
                                 }
                             });
+                            //Añado ese jugador a nuestros jugadores
+                            let player = new Jugador(datos.username, 0);
+                            jugadores.push(player);
                             //Acceder----> Crear tanque para este nuevo usuario
+                            accederJuego(player);
 
+
+                            
 
                         }    
                     }); 
         
                 } else { //Existe ese usuario con ese nombre y contraseña
-        
+                    //Añado jugador a nuestro array jugadores
+                    let player = new Jugador(datos.username, 0);
+                    jugadores.push(player);
                     //Acceder-----> Crear tanque para ese usuario
+                    accederJuego(player);
+
+
                 } 
             }
         });
     });
 });
 
+//Mandar objeto jugador a todos los clientes
 function accederJuego(jugador) {
 
 //Meter un nuevo tanque al juego.
 //Codigo que genera tanque de ese jugador 
-jugador.newtanque(datos);
 
 
-//Codigo que manda ese tanque a los clientes---->
 
+//Codigo que manda ese jugador con tanque a los clientes---->
 io.emit('newjugador',jugador);
 
 
@@ -142,3 +155,43 @@ server.listen( 8080, function () {
     
     });
 });
+
+
+
+class Jugador {
+    constructor(username, puntuacion) {
+        this.username = username;
+        this.puntuacion = puntuacion;
+        this.miTanque = new Tanque();
+    }
+};
+
+
+class Tanque {
+    constructor() {
+        this.positionX=generaPosicion("x");
+        this.positionY=generaPosicion("y");
+      
+        function generaPosicion(cual) {
+            let ocupada = true;
+            let posx = 0;
+            let posy = 0;
+            while (ocupada) {
+                ocupada = false;
+                posx = Math.floor(Math.random() * 19)+1;
+                posy = Math.floor(Math.random() * 19)+1;
+                for (let i = 0; i < jugadores.length; i++) {
+                    if (posx == jugadores[i].miTanque.positionX && posy == jugadores[i].miTanque.positionY && jugadores[i].miTanque.positionX==this.positionX ) {
+                        ocupada = true;
+                    }
+                }
+            }
+
+            if(cual==="x"){
+                return posx;
+            }else{
+                return posy;
+            }
+        };
+    }
+};

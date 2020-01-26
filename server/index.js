@@ -169,10 +169,12 @@ class Jugador {
 
 class Tanque {
     constructor() {
-        this.positionX=generaPosicion("x");
-        this.positionY=generaPosicion("y");
+
+        let variables=generaPosicion();
+        this.positionX=variables[0];
+        this.positionY=variables[1];
       
-        function generaPosicion(cual) {
+        function generaPosicion() {
             let ocupada = true;
             let posx = 0;
             let posy = 0;
@@ -181,17 +183,18 @@ class Tanque {
                 posx = Math.floor(Math.random() * 19)+1;
                 posy = Math.floor(Math.random() * 19)+1;
                 for (let i = 0; i < jugadores.length; i++) {
-                    if (posx == jugadores[i].miTanque.positionX && posy == jugadores[i].miTanque.positionY && jugadores[i].miTanque.positionX==this.positionX ) {
+                    if (posx == jugadores[i].miTanque.positionX && posy == jugadores[i].miTanque.positionY ) {
                         ocupada = true;
                     }
                 }
             }
 
-            if(cual==="x"){
-                return posx;
-            }else{
-                return posy;
-            }
+            let variables=[];
+            variables.push(posx);
+            variables.push(posy);
+
+            return variables;
+
         };
     }
 };

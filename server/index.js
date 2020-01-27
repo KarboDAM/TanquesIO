@@ -19,6 +19,7 @@ var tablero=new Array(2);
 tablero[0]=new Array(tamanoTablero);
 tablero[1]=new Array(tamanoTablero);
 
+
 mongoose.set('useFindAndModify', false);//Lo hizo un mago, no tocar.
 
 //añadimos esas capas a nuestro server express
@@ -134,6 +135,18 @@ server.listen( 8080, function () {
     });
 });
 //
+
+//Devuelve un array con todos los tanques que hay en el servidor.
+function getTanques()
+{
+	Tanques = new Array(jugadores.length);
+
+	for (var i =0;i <  jugadores.length; i++) {
+		Tanques[i]=jugadores[i].miTanque;
+	}
+
+	return Tanques;
+}
 
 //TODO: Cliente. Modificacion del color del tanque.
 class Jugador {

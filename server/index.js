@@ -183,7 +183,7 @@ class Tanque {
                 posx = Math.floor(Math.random() * 19)+1;
                 posy = Math.floor(Math.random() * 19)+1;
                 for (let i = 0; i < jugadores.length; i++) {
-                    if (posx == jugadores[i].miTanque.positionX && posy == jugadores[i].miTanque.positionY ) {
+                    if ((posx - jugadores[i].miTanque.positionX ==-1 || posx - jugadores[i].miTanque.positionX==0 || posx - jugadores[i].miTanque.positionX==1) && (posy - jugadores[i].miTanque.positionY ==-1 || posy - jugadores[i].miTanque.positionY ==0 || posy - jugadores[i].miTanque.positionY ==1)) {
                         ocupada = true;
                     }
                 }

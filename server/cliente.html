@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<!--Necesario para utilizar el socket.io-->
+	<script type='text/javascript' src='../node_modules/socket.io-client/dist/socket.io.js'></script>
+	<script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+	<title>Cliente Prueba</title>
+</head>
+<body>
+	<div id="nick">
+		<input type="text" id="nombre" placeholder="Escribir el nick">
+		<button onclick="conecta()">Enviar</button><br>
+		<button onclick="desconecta()">Desconectar</button>
+	</div>
+</body>
+<script type="text/javascript">			
+	var channel='127.0.0.1:3000';
+	var socket = io.connect(channel);
+
+	function conecta()
+	{
+		var nombre = $('#nombre').val();
+		socket.emit('nick',nombre);
+	}
+</script>
+</html>

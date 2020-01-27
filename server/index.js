@@ -58,9 +58,18 @@ io.sockets.on('connection', function(socket){
             console.log(`Error al intentar obtener los usuarios: ${err}`)
         } else {
             console.log({usuarios});
-            io.emit('datosusuarios',usuarios);
+            socket.emit('datosusuarios',usuarios);
         }
     });
+
+    //
+    for ( var j=0; j<jugadores.length; j++ ) {
+        io.emit('newjugador',jugadores[j]);
+
+    }
+
+
+
     
     //Crea un usuario, lo registra en la BD y lo envia al cliente con la clave 'newJugador'.
 	socket.on('datosLogin', function(datosLogin) {
@@ -88,6 +97,7 @@ io.sockets.on('connection', function(socket){
                             console.log(error.substring(12,18));
                             if( error.substring(12,18) == "E11000" ) {// Si lo intentamos guardar pero ya existe el nombre
                                 console.log("USUARIO YA EXISTE EN LA BD, CONTRASEÑA INCORRECTA")
+                                socket.emit('ContraseñaIncorrecta');
                             }
                         } else { //Ha podido guardar, ergo mandamos los usuarios a los clientes incluyendo el nuevo
                             console.log({usuario: usuarioGuardado});
@@ -106,14 +116,27 @@ io.sockets.on('connection', function(socket){
                             accederJuego(player);
                         }    
                     }); 
-                } else { 
-                    //TODO: Acceder a mongo para leer la puntuacion.
+                } else {
+                    
+                    var estaJugando = false;
+                    //Compruebo que el usuario no este jugando ya...
+                    for ( var j=0; j<jugadores.length; j++ ) {
+                        if( datosLogin.username==jugadores[j].username ) {
+                            estaJugando = true;
+                            socket.emit('yaestasjugando');
+                        }                
+                    }
+                    if(!estaJugando) {
+                        //TODO: Acceder a mongo para leer la puntuacion.
                     //Existe ese usuario con ese nombre y contraseña
                     //Añado jugador a nuestro array jugadores
                     let player = new Jugador(datosLogin.username, 0);
                     jugadores.push(player);
                     //Acceder-----> Crear tanque para ese usuario
                     accederJuego(player);
+
+                    }
+                    
                 } 
             }
         });

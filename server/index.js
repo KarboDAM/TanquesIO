@@ -13,6 +13,11 @@ const bodyParser = require("body-parser");//TODO: Mirar si sobra.
 const mongoose = require('mongoose');
 //traigo esquema de datos de usuario
 const Usuario = require('../models/usuario');
+//Creamos el tablero.
+const tamanoTablero=20;
+var tablero=new Array(2);
+tablero[0]=new Array(tamanoTablero);
+tablero[1]=new Array(tamanoTablero);
 
 mongoose.set('useFindAndModify', false);//Lo hizo un mago, no tocar.
 
@@ -130,6 +135,7 @@ server.listen( 8080, function () {
 });
 //
 
+//TODO: Cliente. Modificacion del color del tanque.
 class Jugador {
     constructor(username, puntuacion) {
         //this.id;
@@ -226,6 +232,9 @@ class Tanque {
                     break;
             }
         }
+        //Que devuelva true/false si hay o no un tanque en esa posicion
+        function compruebaPosicion(posX, posY){}
+
         //TODO: Getters & Setters
     }
 };

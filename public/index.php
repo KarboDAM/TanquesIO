@@ -1,3 +1,8 @@
+<?php
+session_start();
+$_SESSION["username"] = "";
+?>
+
 <html>
 <head>
 <title>Mi aplicación de tanques</title>

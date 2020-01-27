@@ -1,7 +1,7 @@
 var socket = io.connect('http://localhost:8080' , { 'forceNew': true }); //le paso atributo de configuracion forcenew
 
 function meterUsuario() {
-    socket.emit('datos',{
+    socket.emit('datosLogin',{
         username : $('#nombreuser').val(),
         password : $('#password').val()
     });

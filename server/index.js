@@ -100,7 +100,7 @@ io.sockets.on('connection', function(socket){
                                 }
                             });
                             //Añado ese jugador a nuestros jugadores
-                            let player = new Jugador(datos.username);
+                            let player = new Jugador(datosLogin.username,0);
                             jugadores.push(player);
                             //Acceder----> Crear tanque para este nuevo usuario
                             accederJuego(player);
@@ -110,7 +110,7 @@ io.sockets.on('connection', function(socket){
                     //TODO: Acceder a mongo para leer la puntuacion.
                     //Existe ese usuario con ese nombre y contraseña
                     //Añado jugador a nuestro array jugadores
-                    let player = new Jugador(datos.username, 0);
+                    let player = new Jugador(datosLogin.username, 0);
                     jugadores.push(player);
                     //Acceder-----> Crear tanque para ese usuario
                     accederJuego(player);
@@ -141,12 +141,6 @@ class Jugador {
         //this.id;
         this.username = username;
         this.puntuacion = puntuacion;
-        this.miTanque = new Tanque();
-    }
-    constructor(username) {
-        //this.id;
-        this.username = username;
-        this.puntuacion = 0;
         this.miTanque = new Tanque();
     }
 };

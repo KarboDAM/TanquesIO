@@ -52,6 +52,7 @@ if(err) {
     console.log(`Conexión a la base de datos establecida...`);
 }
 
+
 io.sockets.on('connection', function(socket) {
     console.log("se ha conectado alguien desde "+socket.handshake.address);
     //Cuando se conecta alguien le mandamos los usurios al ranking.
@@ -132,22 +133,11 @@ io.sockets.on('connection', function(socket) {
 
 //Mandar objeto jugador a todos los clientes
 function accederJuego(jugador) {
-
 //Meter un nuevo tanque al juego.
 //Codigo que genera tanque de ese jugador 
-
-
-
 //Codigo que manda ese jugador con tanque a los clientes---->
 io.emit('newjugador',jugador);
-
-
-
-
-
-
 }
-
 
 
 server.listen( 8080, function () {
@@ -173,7 +163,7 @@ class Tanque {
         let variables=generaPosicion();
         this.positionX=variables[0];
         this.positionY=variables[1];
-      
+
         function generaPosicion() {
             let ocupada = true;
             let posx = 0;
@@ -188,13 +178,15 @@ class Tanque {
                     }
                 }
             }
-
+    
             let variables=[];
             variables.push(posx);
             variables.push(posy);
-
+    
             return variables;
-
+    
         };
     }
+
+    
 };

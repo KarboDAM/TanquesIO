@@ -13,11 +13,12 @@ const bodyParser = require("body-parser");//TODO: Mirar si sobra.
 const mongoose = require('mongoose');
 //traigo esquema de datos de usuario
 const Usuario = require('../models/usuario');
-//Creamos el tablero.
-const tamanoTablero=20;
-var tablero=new Array(2);
-tablero[0]=new Array(tamanoTablero);
-tablero[1]=new Array(tamanoTablero);
+//Creamos el tablero. Aqui se almacenaran los tanques
+var tamanoTablero=20;
+var tablero=new Array(tamanoTablero);
+for (var i = 0; i < tablero.length; i++) {
+        tablero[i]=new Array(tamanoTablero);
+}
 
 
 mongoose.set('useFindAndModify', false);//Lo hizo un mago, no tocar.
@@ -167,6 +168,7 @@ class Tanque {
         3 - Abajo
     */
     //Los metodos dentro del constructor son "privates" mientras las que estan fuera "public".
+    //window.tablero es para acceder a la variable global.
     constructor() {
 
         let variables=generaPosicion();
@@ -240,8 +242,12 @@ class Tanque {
             }
         }
         //Que devuelva true/false si hay o no un tanque en esa posicion
-        function compruebaPosicion(posX, posY){}
-
+        function compruebaPosicion(posX, posY){
+            return (window.tablero!=null)
+        }
+        function actualizaPosicion(){
+            window.tablero[this.positionX][this.positionY]=this;
+        }
         //TODO: Getters & Setters
     }
 };

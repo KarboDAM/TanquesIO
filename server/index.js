@@ -12,7 +12,7 @@ const mongoose = require('mongoose');
 //variables globales donde almaceno los jugadores...
 let usuariosbd = [];
 let jugadores = [];
-let jugadorActual = null;
+let jugadorActual = null;//Que coño hace esto?
 const sleep = (waitTimeInMs) => new Promise(resolve => setTimeout(resolve, waitTimeInMs));
 
 //traigo esquema de datos de usuario
@@ -21,14 +21,15 @@ const Usuario = require('../models/usuario');
 var tamanoTablero=20;
 var tablero=new Array(tamanoTablero);
 for (var i = 0; i < tablero.length; i++) {
-        tablero[i]=new Array(tamanoTablero);
+    tablero[i]=new Array(tamanoTablero);
 }
 
+//Lo hizo un mago, no tocar.
+mongoose.set('useFindAndModify', false);
 
-mongoose.set('useFindAndModify', false);//Lo hizo un mago, no tocar.
-
+//TODO: Mirar si sobra.
 //añadimos esas capas a nuestro server express
-app.use(bodyParser.urlencoded({ extended: false }));//TODO: Mirar si sobra.
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 //middelwhere? express donde le indicamos la parte publica que queremos que sea estatica
@@ -71,7 +72,6 @@ io.sockets.on('connection', function(socket){
     //
     for ( var j=0; j<jugadores.length; j++ ) {
         io.emit('newjugador',jugadores[j]);
-
     }
 
     socket.on('dispara', function(jugador){
@@ -81,20 +81,17 @@ io.sockets.on('connection', function(socket){
                 jugadorActual = jugadores[i];
                 console.log(jugadores[i].miTanque);
                 jugadores[i].miTanque.dispara();
-
-
             }
-
         }
-
     });
-  socket.on('direccion',function(direccion){
-    //Jugador.miTanque.mueve(direccion);
-    console.log(`Recibiendo datos movimiento ${direccion}`);
-  });
+
+    socket.on('direccion',function(direccion){
+        //Jugador.miTanque.mueve(direccion);
+        console.log(`Recibiendo datos movimiento ${direccion}`);
+    });
 
     //Crea un usuario, lo registra en la BD y lo envia al cliente con la clave 'newJugador'.
-	socket.on('datosLogin', function(datosLogin) {
+	socket.on('datosLogin', function(datosLogin){
         //Cuando meten datosLogin para acceder un usuario--->
         console.log(`El usuario se llama ${datosLogin.username} con contraseña ${datosLogin.password}`);
 
@@ -191,7 +188,7 @@ function getTanques()
 	return Tanques;
 }
 
-//TODO: Cliente. Modificacion del color del tanque.
+
 class Jugador {
     constructor(username, puntuacion) {
         //this.id;
@@ -209,20 +206,18 @@ class Tanque {
         2 - Arriba
         3 - Abajo
     */
-    //Los metodos dentro del constructor son "privates" mientras las que estan fuera "public".
-    //window.tablero es para acceder a la variable global.
+
+    //Los metodos dentro del constructor se tratan "privates".
+    //mientras las que estan fuera como "public".
     constructor() {
 
-        let variables=generaPosicion();
-        this.positionX=variables[0];
-        this.positionY=variables[1];
+        let posiciones=generaPosicion();
+        this.positionX=posiciones[0];
+        this.positionY=posiciones[1];
         this.retraso=3;
         this.vidas=2;
         this.bala=null;
         this.horaUltimoDisparo;
-        //JAIRO: Asignacion de imagen.
-        this.imagen;
-        //Asignamos una posicion del canon por defecto.
         this.posicionCanon=0;
 
         //Metodos
@@ -248,13 +243,46 @@ class Tanque {
 
             return variables;
         };
-        //MANOLO: Modifica las variables posicionX y posicionY del tanque en funcion metodo.
-        //Mueve de uno en uno.
-        //TODO: Mantener pulsado.
-        function mueveDerecha(){this.positionX+=1;}
-        function mueveIzquierda(){this.positionX-=1;}
-        function mueveArriba(){this.positionY-=1;}
-        function mueveAbajo(){this.PositionY+=1;}
+        function mueveDerecha(){
+            if(this.positionX+1<window.tamanoTablero){
+                if(compruebaPosicion(this.positionX,this.positionX)){
+                    //Tendria que comprobar antes si es una bala o un tanque pero YOLO.
+                    window.tablero[this.positionX,this.positionY]=null;
+                }
+                this.positionX+=1;
+                actualizaPosicion();
+            }
+        }
+        function mueveIzquierda(){
+            if(this.positionX-1>=0){
+                if(compruebaPosicion(this.positionX,this.positionX)){
+                    //Tendria que comprobar antes si es una bala o un tanque pero YOLO.
+                    window.tablero[this.positionX,this.positionY]=null;
+                }
+                this.positionX-=1;
+                actualizaPosicion();
+            }
+        }
+        function mueveArriba(){
+            if(positionY-1>=0){
+                if(compruebaPosicion(this.positionX,this.positionX)){
+                    //Tendria que comprobar antes si es una bala o un tanque pero YOLO.
+                    window.tablero[this.positionX,this.positionY]=null;
+                }
+                this.positionY-=1;
+                actualizaPosicion();
+            }
+        }
+        function mueveAbajo(){            
+            if(this.positionY+1<window.tamanoTablero){
+                if(compruebaPosicion(this.positionX,this.positionX)){
+                    //Tendria que comprobar antes si es una bala o un tanque pero YOLO.
+                    window.tablero[this.positionX,this.positionY]=null;
+                }
+                this.positionY+=1;
+                actualizaPosicion();
+            }
+        }
 
         //llama a un metodo u otro en funcion del parametro pasado.
         function mueve(direccion){

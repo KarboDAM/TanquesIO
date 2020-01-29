@@ -212,6 +212,7 @@ class Jugador {
 
 class Tanque {
     constructor() {
+        this.nombre="Pedro";
         let posiciones=generaPosicion();
         this.positionX=posiciones[0];
         this.positionY=posiciones[1];
@@ -247,62 +248,51 @@ class Tanque {
         if(this.positionX+1<tamanoTablero){
             if(this.compruebaPosicion(this.positionX,this.positionX)){
                 //Tendria que comprobar antes si es una bala o un tanque pero YOLO.
-                tablero[this.positionX,this.positionY]=null;
+                tablero[this.positionX,this.positionY]=undefined;
             }
             this.positionX+=1;
-            this.actualizaPosicion();
         }
     }
     mueveIzquierda= function(){
         if(this.positionX-1>=0){
             if(this.compruebaPosicion(this.positionX,this.positionX)){
                 //Tendria que comprobar antes si es una bala o un tanque pero YOLO.
-                tablero[this.positionX,this.positionY]=null;
+                tablero[this.positionX,this.positionY]=undefined;
             }
             this.positionX-=1;
-            this.actualizaPosicion();
         }
     }
     mueveArriba= function(){
         if(this.positionY-1>=0){
             if(this.compruebaPosicion(this.positionX,this.positionX)){
                 //Tendria que comprobar antes si es una bala o un tanque pero YOLO.
-                tablero[this.positionX,this.positionY]=null;
+                tablero[this.positionX,this.positionY]=undefined;
             }
             this.positionY-=1;
-            this.actualizaPosicion();
         }
     }
     mueveAbajo= function(){
         if(this.positionY+1<tamanoTablero){
             if(this.compruebaPosicion(this.positionX,this.positionX)){
                 //Tendria que comprobar antes si es una bala o un tanque pero YOLO.
-                tablero[this.positionX,this.positionY]=null;
+                tablero[this.positionX,this.positionY]=undefined;
             }
             this.positionY+=1;
-            this.actualizaPosicion();
         }
     }
     //Que devuelva true/false si hay un objeto con el mismo nombre.
     compruebaPosicion= function(posX, posY){
-        if(tablero[posX][posY]!=null){
-            return (tablero[posX][posY].nombre==this.nombre);
+        if(tablero[posX][posY]===undefined){
+            return false;
+        }
+        else{
+            console.log(tablero[posX][posY].getNombre()==this.getNombre());
+            return (tablero[posX][posY].getNombre()==this.getNombre());
         }
     }
     actualizaPosicion= function(){
-      console.log("-------");
-      console.log(this.positionX+" -"+this.positionY);
-      console.log(tablero);
-      if(tablero[this.positionX][this.positionY]==null){
-
-        console.log("que mierda");
-        tablero[this.positionX][this.positionY]=this;
-
-      }else{
-
-        console.log(tablero[this.positionX][this.positionY]);
-
-      }
+      console.log(this.positionX+"-"+this.positionY);
+      tablero[this.positionX][this.positionY]=this;
     }
     dispara = function() {
         this.bala = new Bala(this.positionX,this.positionY,this.posicionCanon,this.nombre);
@@ -312,32 +302,29 @@ class Tanque {
         switch(direccion)
         {
             case 0:
-            //this.positionX+=1;
             this.mueveDerecha();
-            io.emit('mueveTanque',jugadorActual);
                 break;
             case 1:
-            //this.positionX-=1;
             this.mueveIzquierda();
-            io.emit('mueveTanque',jugadorActual);
                 break;
             case 2:
-            //this.positionY-=1;
             this.mueveArriba();
-            io.emit('mueveTanque',jugadorActual);
                 break;
             case 3:
-            //this.positionY+=1;
             this.mueveAbajo();
-            io.emit('mueveTanque',jugadorActual);
                 break;
             default:
                 break;
         }
+        this.actualizaPosicion();
+        io.emit('mueveTanque',jugadorActual);
     }
     //llama a un metodo u otro en funcion del parametro pasado.
     toString=function(){
         return "Tanque";
+    }
+    getNombre=function(){
+        return this.nombre;
     }
 };
 

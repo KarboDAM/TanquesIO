@@ -226,15 +226,6 @@ class Tanque {
         this.posicionCanon=0;
         
         //Metodos
-        /*
-        TODO:
-        this.dispara=function(){
-            //Tener en cuenta la posicion canon
-            if(horaUltimoDisparo-horaActual>=retraso){
-                //Mata.
-            }
-        }
-        */
         //Devuelve un array con posX-posY libres en el tablero.
         function generaPosicion() {
             let ocupada = true;
@@ -284,9 +275,11 @@ class Tanque {
                     break;
             }
         }
-        //Que devuelva true/false si hay o no un tanque en esa posicion
+        //Que devuelva true/false si hay un objeto con el mismo nombre.
         function compruebaPosicion(posX, posY){
-            return (window.tablero!=null)
+            if(window.tablero[posX][posY]!=null){
+                return (window.tablero[posX][posY].nombre==this.nombre);
+            }
         }
         function actualizaPosicion(){
             window.tablero[this.positionX][this.positionY]=this;
@@ -295,7 +288,7 @@ class Tanque {
     }
 
     dispara = function() {
-        this.bala = new Bala(this.positionX,this.positionY,this.posicionCanon);
+        new Bala(this.positionX,this.positionY,this.posicionCanon,this.nombre);
     }
 
 
@@ -303,37 +296,47 @@ class Tanque {
 
 class Bala {
 
-    constructor(posX,posY,posicionCanon) {
+    constructor(posX,posY,posicionCanon,nombre) {
 
+        this.nombre=nombre;
+        this.direccion=posicionCanon;
         this.posX=posX;
         this.posY=posY;
+        this.sigue=true;
 
-        switch(posicionCanon)
-            {
+        function mueveBala(){
+            while(this.sigue){//Agregar condicion del tablero
+                movimiento(this.direccion);
+                sleep(1000).then(() => {
+                        io.emit('balaVa',jugadorActual);
+                });
+            }
+        }
+        function mueveDerecha(){
+            //borra
+            positionX++;
+
+        }
+        function mueveIzquierda(){}
+        function mueveArriba(){}
+        function mueveAbajo(){}
+        function movimiento(direccion){
+            switch(direccion){
                 case 0:
-                    sleep(1000).then(() => {
-                    while(this.posX<19){
-                        this.posX++;
-                            io.emit('balaVa',jugadorActual);
-                                
-                    }
-                })
-
+                    mueveDerecha();
                     break;
                 case 1:
-                    
+                    mueveIzquierda();
                     break;
                 case 2:
-                    
+                    mueveArriba();
                     break;
                 case 3:
-                    
+                    mueveAbajo();
                     break;
                 default:
                     break;
             }
-
+        }
     }
-
-
 }

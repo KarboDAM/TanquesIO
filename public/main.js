@@ -40,6 +40,8 @@ function presionar(e){
     arriba = true;
     if(arriba==true){
       direccion = 2;
+      socket.emit("direccion",direccion);
+
       console.log(direccion);
     }
   }
@@ -47,6 +49,8 @@ function presionar(e){
     dch = true;
     if(dch==true){
       direccion = 0;
+      socket.emit("direccion",direccion);
+
       console.log(direccion);
     }
   }
@@ -54,6 +58,8 @@ function presionar(e){
     abajo = true;
     if(abajo==true){
       direccion = 3;
+      socket.emit("direccion",direccion);
+
       console.log(direccion);
     }
   }
@@ -61,6 +67,8 @@ function presionar(e){
     izq = true;
     if(izq==true){
       direccion = 1;
+      socket.emit("direccion",direccion);
+
       console.log(direccion);
     }
   }
@@ -96,4 +104,3 @@ function soltar(e){
     }
   }
 }
-socket.emit("direccion",direccion);

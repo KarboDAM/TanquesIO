@@ -63,13 +63,10 @@ io.sockets.on('connection', function(socket){
             io.emit('datosusuarios',usuarios);
         }
     });
-<<<<<<< Updated upstream
   socket.on('direccion',function(direccion){
-    //usuario.mueve(direccion);
+    //Jugador.miTanque.mueve(direccion);
+    console.log(`Recibiendo datos movimiento ${direccion}`);
   });
-=======
-
->>>>>>> Stashed changes
     //Crea un usuario, lo registra en la BD y lo envia al cliente con la clave 'newJugador'.
 	socket.on('datosLogin', function(datosLogin) {
         //Cuando meten datosLogin para acceder un usuario--->
@@ -259,8 +256,4 @@ class Tanque {
         }
         //TODO: Getters & Setters
     }
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
 };

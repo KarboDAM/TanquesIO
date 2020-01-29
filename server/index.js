@@ -279,7 +279,6 @@ class Tanque {
 
     dispara = function() {
         this.bala = new Bala(this.positionX,this.positionY,this.posicionCanon);
-        console.log("adios");
     }
 
 

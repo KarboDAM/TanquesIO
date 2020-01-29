@@ -221,7 +221,7 @@ class Jugador {
 
 class Tanque {
     constructor() {
-        this.nombre="Pedro";
+        this.nombre="PussyDestroyer";
         let posiciones=generaPosicion();
         this.positionX=posiciones[0];
         this.positionY=posiciones[1];
@@ -230,97 +230,125 @@ class Tanque {
         this.bala=null;
         this.horaUltimoDisparo;
         this.posicionCanon=0;
+        this.actualizaPosicion();
+
+        /*
+            Genera posiciones aleatorias hasta conseguir una libre.
+                @return:
+                    posiciones -> Array con posX e posY en los indices 0 y 1 respectivamente.
+        */
         function generaPosicion() {
-            let ocupada = true;
             let posx = 0;
             let posy = 0;
-            while (ocupada) {
-                ocupada = false;
-                posx = Math.floor(Math.random() * 19)+1;
-                posy = Math.floor(Math.random() * 19)+1;
-                for (let i = 0; i < jugadores.length; i++) {
-                    if ((posx - jugadores[i].miTanque.positionX ==-1 || posx - jugadores[i].miTanque.positionX==0 || posx - jugadores[i].miTanque.positionX==1) && (posy - jugadores[i].miTanque.positionY ==-1 || posy - jugadores[i].miTanque.positionY ==0 || posy - jugadores[i].miTanque.positionY ==1)) {
-                        ocupada = true;
-                    }
-                }
-            }
 
-            let variables=[];
-            variables.push(posx);
-            variables.push(posy);
+            do{
+                posx = Math.floor(Math.random() * tamanoTablero);
+                posy = Math.floor(Math.random() * tamanoTablero);
+            }while(tablero[posx][posy]!=undefined) 
 
-            return variables;
+            let posiciones=[];
+            posiciones.push(posx);
+            posiciones.push(posy);
+
+            return posiciones;
         };
     }
-    //metodos
-    mueveDerecha = function(){
-        if(this.positionX+1<tamanoTablero){
-            if(this.compruebaPosicion(this.positionX,this.positionX)){
-                //Tendria que comprobar antes si es una bala o un tanque pero YOLO.
-                tablero[this.positionX,this.positionY]=undefined;
+
+    /*
+        Mueve el tanque dependiendo de los parametros.
+        @params:
+            sumaX -> Numero a sumar a positionX (para restar usar num negativos).
+            sumaY -> Numero a sumar a positionY (para restar usar num negativos).
+    */
+    movimiento=function(sumaX, sumaY){
+        var nuevaX=this.positionX+sumaX;
+        var nuevaY=this.positionY+sumaY;
+
+        //Primero comprobamos que las posiciones entran en el tablero
+        if(nuevaX<tamanoTablero && nuevaX>=0 && nuevaY<tamanoTablero && nuevaY>=0 ){
+            //Verificamos el contenido de la nueva pos.
+            var contenido=this.compruebaPosicion(nuevaX,nuevaY);
+            switch(contenido){
+                case 0:
+                    //Verificamos el contenido de la antigua posicion
+                    //En caso de que haya quedado un tanque con nuestro nombre lo borramos.
+                    contenido=this.compruebaPosicion(this.positionX,this.positionY);
+                    if(contenido==1)
+                        tablero[this.positionX][this.positionY]=undefined;
+
+                    this.positionX=nuevaX;
+                    this.positionY=nuevaY;
+                    break;
+                case 1:
+                    //Si hay un tanque con nuestro nombre tenemos un problema.
+                    console.log("Error: tenemos tanque duplicado");
+                    break;
+                case 2:
+                    //Si hay una bala con nuestro nombre tenemos otro problema.
+                    console.log("Error: como llego esa bala ahi?");
+                    break;
+                default:
+                    break;
             }
-            this.positionX+=1;
         }
     }
-    mueveIzquierda= function(){
-        if(this.positionX-1>=0){
-            if(this.compruebaPosicion(this.positionX,this.positionX)){
-                //Tendria que comprobar antes si es una bala o un tanque pero YOLO.
-                tablero[this.positionX,this.positionY]=undefined;
-            }
-            this.positionX-=1;
-        }
-    }
-    mueveArriba= function(){
-        if(this.positionY-1>=0){
-            if(this.compruebaPosicion(this.positionX,this.positionX)){
-                //Tendria que comprobar antes si es una bala o un tanque pero YOLO.
-                tablero[this.positionX,this.positionY]=undefined;
-            }
-            this.positionY-=1;
-        }
-    }
-    mueveAbajo= function(){
-        if(this.positionY+1<tamanoTablero){
-            if(this.compruebaPosicion(this.positionX,this.positionX)){
-                //Tendria que comprobar antes si es una bala o un tanque pero YOLO.
-                tablero[this.positionX,this.positionY]=undefined;
-            }
-            this.positionY+=1;
-        }
-    }
-    //Que devuelva true/false si hay un objeto con el mismo nombre.
-    compruebaPosicion= function(posX, posY){
+    /*
+        Verifica lo que hay en el tablero en las posX e posY.
+        @params:
+            posX -> Columna.
+            posY -> Fila.
+        @returns:
+            0 -> No hay nada.
+            1 -> Hay un tanque con nuestro nombre.
+            2 -> Hay una bala con nuestro nombre.
+            3 -> Otros
+    */
+    compruebaPosicion=function(posX, posY){
         if(tablero[posX][posY]===undefined){
-            return false;
+            return 0;
         }
         else{
             console.log(tablero[posX][posY].getNombre()==this.getNombre());
-            return (tablero[posX][posY].getNombre()==this.getNombre());
+            if(tablero[posX][posY].getNombre()==this.getNombre()){
+                if(tablero[posX][posY].toString()=="Tanque")
+                    return 1;
+                else
+                    return 2;
+            }
+            else{
+                return 3;
+            }
         }
     }
-    actualizaPosicion= function(){
-      console.log(this.positionX+"-"+this.positionY);
-      tablero[this.positionX][this.positionY]=this;
+    /*
+        Guarda al tanque en el tablero en la posicion que le corresponde.
+        Ej: Un tanque con las posX=5,posY=4 se guardaria en tablero[5][4].
+    */
+    actualizaPosicion=function(){
+        tablero[this.positionX][this.positionY]=this;
     }
     dispara = function() {
         this.bala = new Bala(this.positionX,this.positionY,this.posicionCanon,this.nombre);
     }
-    //llama a un metodo u otro en funcion del parametro pasado.
+    /*
+        Llama al metodo movimiento dependiendo del parametro.
+        @param:
+            direccion -> numero que representa la direccion (0 dch, 1izq, 2arr, 3abj).
+    */
     mueve = function(direccion){
         switch(direccion)
         {
             case 0:
-            this.mueveDerecha();
+            this.movimiento(1,0);
                 break;
             case 1:
-            this.mueveIzquierda();
+            this.movimiento(-1,0);
                 break;
             case 2:
-            this.mueveArriba();
+            this.movimiento(0,-1);
                 break;
             case 3:
-            this.mueveAbajo();
+            this.movimiento(0,+1);
                 break;
             default:
                 break;
@@ -328,27 +356,15 @@ class Tanque {
         this.actualizaPosicion();
         io.emit('mueveTanque',jugadorActual);
     }
+    /*
+        Modifica la direccion de la torreta.
+        @param:
+            direccionT -> numero que representa la direccion (0 dch, 1izq, 2arr, 3abj).
+    */
     mueveTorreta = function(direccionT){
-      if(direccionT!=69){
-        switch(direccionT){
-          case 0:
-            this.posicionCanon=direccionT;
-            break;
-          case 1:
-            this.posicionCanon=direccionT;
-            break;
-          case 2:
-            this.posicionCanon=direccionT;
-            break;
-          case 3:
-            this.posicionCanon=direccionT;
-            break;
-          default:
-            break;
-        }
-      }
+      if(direccionT!=69)
+        this.posicionCanon=direccionT;
     }
-    //llama a un metodo u otro en funcion del parametro pasado.
     toString=function(){
         return "Tanque";
     }
@@ -375,10 +391,7 @@ class Bala {
                 });
             }
         }
-        function mueveDerecha(){
-            //borra
-            positionX++;
-        }
+        function mueveDerecha(){}
         function mueveIzquierda(){}
         function mueveArriba(){}
         function mueveAbajo(){}

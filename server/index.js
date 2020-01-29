@@ -4,13 +4,17 @@ var app = express();
 var server = require('http').Server(app);
 //
 var io = require('socket.io')(server);
-let usuariosbd = [];
-let jugadores = [];
-// npm i -S -body-parser ===>
-//Instalamos una libreria que nos permite todos esos mensajes de tipo res (como los POST), parsearslos, tratar y recogerlos
+// npm i -S -body-parser ===> 
+//Instalamos una libreria que nos permite todos esos mensajes de tipo res (como los POST), parsearslos, tratar y recogerlos 
 const bodyParser = require("body-parser");//TODO: Mirar si sobra.
 //Instalamos librería mongoose para utilizar mongodb en nuestro proyecto. (npm i -S mongoose)
 const mongoose = require('mongoose');
+//variables globales donde almaceno los jugadores...
+let usuariosbd = [];
+let jugadores = [];
+let jugadorActual = null;
+const sleep = (waitTimeInMs) => new Promise(resolve => setTimeout(resolve, waitTimeInMs));
+
 //traigo esquema de datos de usuario
 const Usuario = require('../models/usuario');
 //Creamos el tablero. Aqui se almacenaran los tanques
@@ -60,13 +64,35 @@ io.sockets.on('connection', function(socket){
             console.log(`Error al intentar obtener los usuarios: ${err}`)
         } else {
             console.log({usuarios});
-            io.emit('datosusuarios',usuarios);
+            socket.emit('datosusuarios',usuarios);
         }
+    });
+
+    //
+    for ( var j=0; j<jugadores.length; j++ ) {
+        io.emit('newjugador',jugadores[j]);
+
+    }
+
+    socket.on('dispara', function(jugador){
+        console.log("recibo disparon con el jugador en server");
+        for(let i=0; i<jugadores.length; i++) {
+            if(jugadores[i].username=jugador.username) {
+                jugadorActual = jugadores[i];
+                console.log(jugadores[i].miTanque);
+                jugadores[i].miTanque.dispara();
+
+
+            }
+
+        }
+
     });
   socket.on('direccion',function(direccion){
     //Jugador.miTanque.mueve(direccion);
     console.log(`Recibiendo datos movimiento ${direccion}`);
   });
+
     //Crea un usuario, lo registra en la BD y lo envia al cliente con la clave 'newJugador'.
 	socket.on('datosLogin', function(datosLogin) {
         //Cuando meten datosLogin para acceder un usuario--->
@@ -93,6 +119,7 @@ io.sockets.on('connection', function(socket){
                             console.log(error.substring(12,18));
                             if( error.substring(12,18) == "E11000" ) {// Si lo intentamos guardar pero ya existe el nombre
                                 console.log("USUARIO YA EXISTE EN LA BD, CONTRASEÑA INCORRECTA")
+                                socket.emit('ContraseñaIncorrecta');
                             }
                         } else { //Ha podido guardar, ergo mandamos los usuarios a los clientes incluyendo el nuevo
                             console.log({usuario: usuarioGuardado});
@@ -109,9 +136,19 @@ io.sockets.on('connection', function(socket){
                             jugadores.push(player);
                             //Acceder----> Crear tanque para este nuevo usuario
                             accederJuego(player);
-                        }
-                    });
+                        }    
+                    }); 
                 } else {
+                    
+                    var estaJugando = false;
+                    //Compruebo que el usuario no este jugando ya...
+                    for ( var j=0; j<jugadores.length; j++ ) {
+                        if( datosLogin.username==jugadores[j].username ) {
+                            estaJugando = true;
+                            socket.emit('yaestasjugando');
+                        }                
+                    }
+                    if(!estaJugando) {
                     //TODO: Acceder a mongo para leer la puntuacion.
                     //Existe ese usuario con ese nombre y contraseña
                     //Añado jugador a nuestro array jugadores
@@ -119,13 +156,12 @@ io.sockets.on('connection', function(socket){
                     jugadores.push(player);
                     //Acceder-----> Crear tanque para ese usuario
                     accederJuego(player);
-                }
+
+                    }
+                } 
             }
         });
     });
-
-
-
 });
 
 //Mandar objeto jugador a todos los clientes con la clave 'newJugador'.
@@ -182,6 +218,7 @@ class Tanque {
         this.positionY=variables[1];
         this.retraso=3;
         this.vidas=2;
+        this.bala=null;
         this.horaUltimoDisparo;
         //JAIRO: Asignacion de imagen.
         this.imagen;
@@ -189,15 +226,6 @@ class Tanque {
         this.posicionCanon=0;
 
         //Metodos
-        /*
-        TODO:
-        this.dispara=function(){
-            //Tener en cuenta la posicion canon
-            if(horaUltimoDisparo-horaActual>=retraso){
-                //Mata.
-            }
-        }
-        */
         //Devuelve un array con posX-posY libres en el tablero.
         function generaPosicion() {
             let ocupada = true;
@@ -227,10 +255,73 @@ class Tanque {
         function mueveIzquierda(){this.positionX-=1;}
         function mueveArriba(){this.positionY-=1;}
         function mueveAbajo(){this.PositionY+=1;}
+
         //llama a un metodo u otro en funcion del parametro pasado.
         function mueve(direccion){
             switch(direccion)
             {
+                case 0:
+                    mueveDerecha();                   
+                    break;
+                case 1:
+                    mueveIzquierda();
+                    break;
+                case 2:
+                    mueveArriba();
+                    break;
+                case 3:
+                    mueveAbajo();
+                    break;
+                default:
+                    break;
+            }
+        }
+        //Que devuelva true/false si hay un objeto con el mismo nombre.
+        function compruebaPosicion(posX, posY){
+            if(window.tablero[posX][posY]!=null){
+                return (window.tablero[posX][posY].nombre==this.nombre);
+            }
+        }
+        function actualizaPosicion(){
+            window.tablero[this.positionX][this.positionY]=this;
+        }
+        //TODO: Getters & Setters
+    }
+    dispara = function() {
+        new Bala(this.positionX,this.positionY,this.posicionCanon,this.nombre);
+    }
+
+
+};
+
+class Bala {
+
+    constructor(posX,posY,posicionCanon,nombre) {
+
+        this.nombre=nombre;
+        this.direccion=posicionCanon;
+        this.posX=posX;
+        this.posY=posY;
+        this.sigue=true;
+
+        function mueveBala(){
+            while(this.sigue){//Agregar condicion del tablero
+                movimiento(this.direccion);
+                sleep(1000).then(() => {
+                        io.emit('balaVa',jugadorActual);
+                });
+            }
+        }
+        function mueveDerecha(){
+            //borra
+            positionX++;
+
+        }
+        function mueveIzquierda(){}
+        function mueveArriba(){}
+        function mueveAbajo(){}
+        function movimiento(direccion){
+            switch(direccion){
                 case 0:
                     mueveDerecha();
                     break;
@@ -247,13 +338,5 @@ class Tanque {
                     break;
             }
         }
-        //Que devuelva true/false si hay o no un tanque en esa posicion
-        function compruebaPosicion(posX, posY){
-            return (window.tablero!=null)
-        }
-        function actualizaPosicion(){
-            window.tablero[this.positionX][this.positionY]=this;
-        }
-        //TODO: Getters & Setters
     }
-};
+}

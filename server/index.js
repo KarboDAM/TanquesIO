@@ -4,13 +4,17 @@ var app = express();
 var server = require('http').Server(app);
 //
 var io = require('socket.io')(server);
-let usuariosbd = [];
-let jugadores = [];
 // npm i -S -body-parser ===> 
 //Instalamos una libreria que nos permite todos esos mensajes de tipo res (como los POST), parsearslos, tratar y recogerlos 
 const bodyParser = require("body-parser");//TODO: Mirar si sobra.
 //Instalamos librería mongoose para utilizar mongodb en nuestro proyecto. (npm i -S mongoose)
 const mongoose = require('mongoose');
+//variables globales donde almaceno los jugadores...
+let usuariosbd = [];
+let jugadores = [];
+let jugadorActual = null;
+const sleep = (waitTimeInMs) => new Promise(resolve => setTimeout(resolve, waitTimeInMs));
+
 //traigo esquema de datos de usuario
 const Usuario = require('../models/usuario');
 //Creamos el tablero. Aqui se almacenaran los tanques
@@ -60,9 +64,33 @@ io.sockets.on('connection', function(socket){
             console.log(`Error al intentar obtener los usuarios: ${err}`)
         } else {
             console.log({usuarios});
-            io.emit('datosusuarios',usuarios);
+            socket.emit('datosusuarios',usuarios);
         }
     });
+
+    //
+    for ( var j=0; j<jugadores.length; j++ ) {
+        io.emit('newjugador',jugadores[j]);
+
+    }
+
+    socket.on('dispara', function(jugador){
+        console.log("recibo disparon con el jugador en server");
+        for(let i=0; i<jugadores.length; i++) {
+            if(jugadores[i].username=jugador.username) {
+                jugadorActual = jugadores[i];
+                console.log(jugadores[i].miTanque);
+                jugadores[i].miTanque.dispara();
+
+
+            }
+
+        }
+
+    });
+
+
+
     
     //Crea un usuario, lo registra en la BD y lo envia al cliente con la clave 'newJugador'.
 	socket.on('datosLogin', function(datosLogin) {
@@ -90,6 +118,7 @@ io.sockets.on('connection', function(socket){
                             console.log(error.substring(12,18));
                             if( error.substring(12,18) == "E11000" ) {// Si lo intentamos guardar pero ya existe el nombre
                                 console.log("USUARIO YA EXISTE EN LA BD, CONTRASEÑA INCORRECTA")
+                                socket.emit('ContraseñaIncorrecta');
                             }
                         } else { //Ha podido guardar, ergo mandamos los usuarios a los clientes incluyendo el nuevo
                             console.log({usuario: usuarioGuardado});
@@ -108,14 +137,27 @@ io.sockets.on('connection', function(socket){
                             accederJuego(player);
                         }    
                     }); 
-                } else { 
-                    //TODO: Acceder a mongo para leer la puntuacion.
+                } else {
+                    
+                    var estaJugando = false;
+                    //Compruebo que el usuario no este jugando ya...
+                    for ( var j=0; j<jugadores.length; j++ ) {
+                        if( datosLogin.username==jugadores[j].username ) {
+                            estaJugando = true;
+                            socket.emit('yaestasjugando');
+                        }                
+                    }
+                    if(!estaJugando) {
+                        //TODO: Acceder a mongo para leer la puntuacion.
                     //Existe ese usuario con ese nombre y contraseña
                     //Añado jugador a nuestro array jugadores
                     let player = new Jugador(datosLogin.username, 0);
                     jugadores.push(player);
                     //Acceder-----> Crear tanque para ese usuario
                     accederJuego(player);
+
+                    }
+                    
                 } 
             }
         });
@@ -176,6 +218,7 @@ class Tanque {
         this.positionY=variables[1];
         this.retraso=3;
         this.vidas=2;
+        this.bala=null;
         this.horaUltimoDisparo;
         //JAIRO: Asignacion de imagen.
         this.imagen;
@@ -250,4 +293,47 @@ class Tanque {
         }
         //TODO: Getters & Setters
     }
+
+    dispara = function() {
+        this.bala = new Bala(this.positionX,this.positionY,this.posicionCanon);
+    }
+
+
 };
+
+class Bala {
+
+    constructor(posX,posY,posicionCanon) {
+
+        this.posX=posX;
+        this.posY=posY;
+
+        switch(posicionCanon)
+            {
+                case 0:
+                    sleep(1000).then(() => {
+                    while(this.posX<19){
+                        this.posX++;
+                            io.emit('balaVa',jugadorActual);
+                                
+                    }
+                })
+
+                    break;
+                case 1:
+                    
+                    break;
+                case 2:
+                    
+                    break;
+                case 3:
+                    
+                    break;
+                default:
+                    break;
+            }
+
+    }
+
+
+}

@@ -2,6 +2,7 @@ var socket = io.connect('http://localhost:8080' , { 'forceNew': true }); //le pa
 //creo variable donde guardo el nombre del usuario que esta jugando en ese cliente
 var minombre="";
 var jugadores = [];
+var jugadorActual = null;
 function meterUsuario() {
     socket.emit('datosLogin',{
         username : $('#nombreuser').val(),
@@ -45,6 +46,14 @@ socket.on('datosusuarios',function(usuarios){
     mostrarUsuarios(usuarios);
 });
 
+//recibir datos del movimiento del tanque desde el server
+socket.on('mueveTanque',function(jugador){
+    mueveTanque(jugador);
+});
+
+
+
+
 socket.on('yaestasjugando',function(){
     alert("Ya estas jugando en otro cliente chaval!");
 });
@@ -52,6 +61,27 @@ socket.on('ContraseñaIncorrecta',function(){
     alert("Contraseña Incorrecta!");
 });
 
+function mueveTanque(jugador) {
+    jugadorActual = jugador;
+
+  $(`#tanque-${jugador.username}`).remove();
+  let posicionX = jugador.miTanque.positionX*45;
+  let posicionY = jugador.miTanque.positionY*25;
+  //todos los tanques son rojos en principio
+  let color = "red";
+  // pero miro si el tanque es mio o de otro usurio, para ello comparo el nombre del usuario que es dueño con mi variable "minombre"
+  //si es mi tanque lo pinto de azul, y sera el tanque que maneje
+  if(jugador.username==minombre) {
+      color = "blue";
+      //elimino el div del login, ya no me interesa poder introducir mas tanques con ese usuario
+      $("#login").empty();
+      $("#tablero").append(`<div class="tanque" id="tanque-${jugador.username}" style="position: absolute; top: ${posicionY}px; left: ${posicionX}px; width: 45px; height: 25px;"><img src="tank/ab.png"></img> </div>`);
+  }else{
+      $("#tablero").append(`<div class="tanque" id="tanque-${jugador.username}" style="position: absolute; top: ${posicionY}px; left: ${posicionX}px; width: 45px; height: 25px;"><img src="tank/rb.png"></img> </div>`);
+  }
+
+
+}
 function mostrarUsuarios(usuarios){
 
     $("#ranking").empty();
@@ -64,6 +94,7 @@ function mostrarUsuarios(usuarios){
 socket.on('newjugador',function(jugador){
     //coloco el tanque
     jugadores.push(jugador);
+    jugadorActual = jugador;
     let posicionX = jugador.miTanque.positionX*45;
     let posicionY = jugador.miTanque.positionY*25;
     //todos los tanques son rojos en principio
@@ -78,9 +109,10 @@ socket.on('newjugador',function(jugador){
     }else{
         $("#tablero").append(`<div class="tanque" id="tanque-${jugador.username}" style="position: absolute; top: ${posicionY}px; left: ${posicionX}px; width: 45px; height: 25px;"><img src="tank/rb.png"></img> </div>`);
     }
-    
+
 });
 
+//parte que envia desde cliente al server el movimiento y quien lo debe hacer
 var arriba = false;
 var abajo = false;
 var izq = false;
@@ -92,7 +124,7 @@ function presionar(e){
     arriba = true;
     if(arriba==true){
       direccion = 2;
-      socket.emit("direccion",direccion);
+      socket.emit("direccion",direccion,jugadorActual);
 
       console.log(direccion);
     }
@@ -101,7 +133,7 @@ function presionar(e){
     dch = true;
     if(dch==true){
       direccion = 0;
-      socket.emit("direccion",direccion);
+      socket.emit("direccion",direccion,jugadorActual);
 
       console.log(direccion);
     }
@@ -110,7 +142,7 @@ function presionar(e){
     abajo = true;
     if(abajo==true){
       direccion = 3;
-      socket.emit("direccion",direccion);
+      socket.emit("direccion",direccion,jugadorActual);
 
       console.log(direccion);
     }
@@ -119,7 +151,7 @@ function presionar(e){
     izq = true;
     if(izq==true){
       direccion = 1;
-      socket.emit("direccion",direccion);
+      socket.emit("direccion",direccion,jugadorActual);
 
       console.log(direccion);
     }

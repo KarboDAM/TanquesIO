@@ -283,27 +283,6 @@ class Tanque {
                 actualizaPosicion();
             }
         }
-
-        //llama a un metodo u otro en funcion del parametro pasado.
-        function mueve(direccion){
-            switch(direccion)
-            {
-                case 0:
-                    mueveDerecha();                   
-                    break;
-                case 1:
-                    mueveIzquierda();
-                    break;
-                case 2:
-                    mueveArriba();
-                    break;
-                case 3:
-                    mueveAbajo();
-                    break;
-                default:
-                    break;
-            }
-        }
         //Que devuelva true/false si hay un objeto con el mismo nombre.
         function compruebaPosicion(posX, posY){
             if(window.tablero[posX][posY]!=null){
@@ -318,8 +297,29 @@ class Tanque {
     dispara = function() {
         new Bala(this.positionX,this.positionY,this.posicionCanon,this.nombre);
     }
-
-
+    //llama a un metodo u otro en funcion del parametro pasado.
+    mueve=function(direccion){
+        switch(direccion)
+        {
+            case 0:
+                mueveDerecha();                   
+                break;
+            case 1:
+                mueveIzquierda();
+                break;
+            case 2:
+                mueveArriba();
+                break;
+            case 3:
+                mueveAbajo();
+                break;
+            default:
+                break;
+        }
+    }
+    toString=function(){
+        return "Tanque";
+    }
 };
 
 class Bala {
@@ -343,7 +343,6 @@ class Bala {
         function mueveDerecha(){
             //borra
             positionX++;
-
         }
         function mueveIzquierda(){}
         function mueveArriba(){}
@@ -366,5 +365,9 @@ class Bala {
                     break;
             }
         }
+    }
+
+    toString=function(){
+        return "Bala";
     }
 }

@@ -251,7 +251,9 @@ class Tanque {
         //MANOLO: Modifica las variables posicionX y posicionY del tanque en funcion metodo.
         //Mueve de uno en uno.
         //TODO: Mantener pulsado.
-        function mueveDerecha(){}
+        function mueveDerecha(){
+            
+        }
         function mueveIzquierda(){}
         function mueveArriba(){}
         function mueveAbajo(){}
@@ -260,7 +262,7 @@ class Tanque {
             switch(direccion)
             {
                 case 0:
-                    mueveDerecha();
+                    mueveDerecha();                   
                     break;
                 case 1:
                     mueveIzquierda();

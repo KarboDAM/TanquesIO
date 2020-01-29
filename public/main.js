@@ -74,7 +74,10 @@ socket.on('newjugador',function(jugador){
         color = "blue";
         //elimino el div del login, ya no me interesa poder introducir mas tanques con ese usuario
         $("#login").empty();
+        $("#tablero").append(`<div class="tanque" id="tanque-${jugador.username}" style="position: absolute; top: ${posicionY}px; left: ${posicionX}px; width: 45px; height: 25px;"><img src="tank/ab.png"></img> </div>`);
+    }else{
+        $("#tablero").append(`<div class="tanque" id="tanque-${jugador.username}" style="position: absolute; top: ${posicionY}px; left: ${posicionX}px; width: 45px; height: 25px;"><img src="tank/rb.png"></img> </div>`);
     }
-    $("#tablero").append(`<div class="tanque" id="tanque-${jugador.username}" style="position: absolute; top: ${posicionY}px; left: ${posicionX}px; width: 45px; height: 25px;background-color: ${color}"> </div>`);
+    
 });
 

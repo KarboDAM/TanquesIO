@@ -88,15 +88,16 @@ io.sockets.on('connection', function(socket){
         }
 
     });
+  socket.on('direccion',function(direccion){
+    //Jugador.miTanque.mueve(direccion);
+    console.log(`Recibiendo datos movimiento ${direccion}`);
+  });
 
-
-
-    
     //Crea un usuario, lo registra en la BD y lo envia al cliente con la clave 'newJugador'.
 	socket.on('datosLogin', function(datosLogin) {
         //Cuando meten datosLogin para acceder un usuario--->
         console.log(`El usuario se llama ${datosLogin.username} con contraseña ${datosLogin.password}`);
-        
+
         let usuario = new Usuario();
         usuario._id = datosLogin.username;
         usuario.password = datosLogin.password;
@@ -148,7 +149,7 @@ io.sockets.on('connection', function(socket){
                         }                
                     }
                     if(!estaJugando) {
-                        //TODO: Acceder a mongo para leer la puntuacion.
+                    //TODO: Acceder a mongo para leer la puntuacion.
                     //Existe ese usuario con ese nombre y contraseña
                     //Añado jugador a nuestro array jugadores
                     let player = new Jugador(datosLogin.username, 0);
@@ -157,7 +158,6 @@ io.sockets.on('connection', function(socket){
                     accederJuego(player);
 
                     }
-                    
                 } 
             }
         });
@@ -167,7 +167,7 @@ io.sockets.on('connection', function(socket){
 //Mandar objeto jugador a todos los clientes con la clave 'newJugador'.
 function accederJuego(jugador) {
     //Meter un nuevo tanque al juego.
-    //Codigo que genera tanque de ese jugador 
+    //Codigo que genera tanque de ese jugador
     //Codigo que manda ese jugador con tanque a los clientes---->
     io.emit('newjugador',jugador);
 }
@@ -224,7 +224,7 @@ class Tanque {
         this.imagen;
         //Asignamos una posicion del canon por defecto.
         this.posicionCanon=0;
-        
+
         //Metodos
         //Devuelve un array con posX-posY libres en el tablero.
         function generaPosicion() {
@@ -251,12 +251,11 @@ class Tanque {
         //MANOLO: Modifica las variables posicionX y posicionY del tanque en funcion metodo.
         //Mueve de uno en uno.
         //TODO: Mantener pulsado.
-        function mueveDerecha(){
-            
-        }
-        function mueveIzquierda(){}
-        function mueveArriba(){}
-        function mueveAbajo(){}
+        function mueveDerecha(){this.positionX+=1;}
+        function mueveIzquierda(){this.positionX-=1;}
+        function mueveArriba(){this.positionY-=1;}
+        function mueveAbajo(){this.PositionY+=1;}
+
         //llama a un metodo u otro en funcion del parametro pasado.
         function mueve(direccion){
             switch(direccion)
@@ -288,7 +287,6 @@ class Tanque {
         }
         //TODO: Getters & Setters
     }
-
     dispara = function() {
         new Bala(this.positionX,this.positionY,this.posicionCanon,this.nombre);
     }

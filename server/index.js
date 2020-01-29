@@ -4,13 +4,15 @@ var app = express();
 var server = require('http').Server(app);
 //
 var io = require('socket.io')(server);
-let usuariosbd = [];
-let jugadores = [];
 // npm i -S -body-parser ===> 
 //Instalamos una libreria que nos permite todos esos mensajes de tipo res (como los POST), parsearslos, tratar y recogerlos 
 const bodyParser = require("body-parser");//TODO: Mirar si sobra.
 //Instalamos librería mongoose para utilizar mongodb en nuestro proyecto. (npm i -S mongoose)
 const mongoose = require('mongoose');
+//variables globales donde almaceno los jugadores...
+let usuariosbd = [];
+let jugadores = [];
+let jugadorActual = null;
 //traigo esquema de datos de usuario
 const Usuario = require('../models/usuario');
 //Creamos el tablero.
@@ -18,6 +20,10 @@ const tamanoTablero=20;
 var tablero=new Array(2);
 tablero[0]=new Array(tamanoTablero);
 tablero[1]=new Array(tamanoTablero);
+const sleep = (waitTimeInMs) => new Promise(resolve => setTimeout(resolve, waitTimeInMs));
+
+
+//const sleep = (milliseconds) => {return new Promise(resolve => setTimeout(resolve, milliseconds)) }
 
 mongoose.set('useFindAndModify', false);//Lo hizo un mago, no tocar.
 
@@ -67,6 +73,21 @@ io.sockets.on('connection', function(socket){
         io.emit('newjugador',jugadores[j]);
 
     }
+
+    socket.on('dispara', function(jugador){
+        console.log("recibo disparon con el jugador en server");
+        for(let i=0; i<jugadores.length; i++) {
+            if(jugadores[i].username=jugador.username) {
+                jugadorActual = jugadores[i];
+                console.log(jugadores[i].miTanque);
+                jugadores[i].miTanque.dispara();
+
+
+            }
+
+        }
+
+    });
 
 
 
@@ -184,6 +205,7 @@ class Tanque {
         this.positionY=variables[1];
         this.retraso=3;
         this.vidas=2;
+        this.bala=null;
         this.horaUltimoDisparo;
         //JAIRO: Asignacion de imagen.
         this.imagen;
@@ -254,4 +276,48 @@ class Tanque {
 
         //TODO: Getters & Setters
     }
+
+    dispara = function() {
+        this.bala = new Bala(this.positionX,this.positionY,this.posicionCanon);
+        console.log("adios");
+    }
+
+
 };
+
+class Bala {
+
+    constructor(posX,posY,posicionCanon) {
+
+        this.posX=posX;
+        this.posY=posY;
+
+        switch(posicionCanon)
+            {
+                case 0:
+                    sleep(1000).then(() => {
+                    while(this.posX<19){
+                        this.posX++;
+                            io.emit('balaVa',jugadorActual);
+                                
+                    }
+                })
+
+                    break;
+                case 1:
+                    
+                    break;
+                case 2:
+                    
+                    break;
+                case 3:
+                    
+                    break;
+                default:
+                    break;
+            }
+
+    }
+
+
+}

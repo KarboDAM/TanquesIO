@@ -6,8 +6,8 @@ var server = require('http').Server(app);
 var io = require('socket.io')(server);
 let usuariosbd = [];
 let jugadores = [];
-// npm i -S -body-parser ===> 
-//Instalamos una libreria que nos permite todos esos mensajes de tipo res (como los POST), parsearslos, tratar y recogerlos 
+// npm i -S -body-parser ===>
+//Instalamos una libreria que nos permite todos esos mensajes de tipo res (como los POST), parsearslos, tratar y recogerlos
 const bodyParser = require("body-parser");//TODO: Mirar si sobra.
 //Instalamos librería mongoose para utilizar mongodb en nuestro proyecto. (npm i -S mongoose)
 const mongoose = require('mongoose');
@@ -61,12 +61,14 @@ io.sockets.on('connection', function(socket){
             io.emit('datosusuarios',usuarios);
         }
     });
-    
+  socket.on('direccion',function(direccion){
+    //usuario.mueve(direccion);
+  });
     //Crea un usuario, lo registra en la BD y lo envia al cliente con la clave 'newJugador'.
 	socket.on('datosLogin', function(datosLogin) {
         //Cuando meten datosLogin para acceder un usuario--->
         console.log(`El usuario se llama ${datosLogin.username} con contraseña ${datosLogin.password}`);
-        
+
         let usuario = new Usuario();
         usuario._id = datosLogin.username;
         usuario.password = datosLogin.password;
@@ -104,9 +106,9 @@ io.sockets.on('connection', function(socket){
                             jugadores.push(player);
                             //Acceder----> Crear tanque para este nuevo usuario
                             accederJuego(player);
-                        }    
-                    }); 
-                } else { 
+                        }
+                    });
+                } else {
                     //TODO: Acceder a mongo para leer la puntuacion.
                     //Existe ese usuario con ese nombre y contraseña
                     //Añado jugador a nuestro array jugadores
@@ -114,7 +116,7 @@ io.sockets.on('connection', function(socket){
                     jugadores.push(player);
                     //Acceder-----> Crear tanque para ese usuario
                     accederJuego(player);
-                } 
+                }
             }
         });
     });
@@ -123,7 +125,7 @@ io.sockets.on('connection', function(socket){
 //Mandar objeto jugador a todos los clientes con la clave 'newJugador'.
 function accederJuego(jugador) {
     //Meter un nuevo tanque al juego.
-    //Codigo que genera tanque de ese jugador 
+    //Codigo que genera tanque de ese jugador
     //Codigo que manda ese jugador con tanque a los clientes---->
     io.emit('newjugador',jugador);
 }
@@ -166,7 +168,7 @@ class Tanque {
         this.imagen;
         //Asignamos una posicion del canon por defecto.
         this.posicionCanon=0;
-        
+
         //Metodos
         /*
         TODO:
@@ -202,10 +204,10 @@ class Tanque {
         //MANOLO: Modifica las variables posicionX y posicionY del tanque en funcion metodo.
         //Mueve de uno en uno.
         //TODO: Mantener pulsado.
-        function mueveDerecha(){}
-        function mueveIzquierda(){}
-        function mueveArriba(){}
-        function mueveAbajo(){}
+        function mueveDerecha(){this.positionX+=1;}
+        function mueveIzquierda(){this.positionX-=1;}
+        function mueveArriba(){this.positionY-=1;}
+        function mueveAbajo(){this.PositionY+=1;}
         //llama a un metodo u otro en funcion del parametro pasado.
         function mueve(direccion){
             switch(direccion)

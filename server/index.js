@@ -102,6 +102,15 @@ io.sockets.on('connection', function(socket){
     console.log(`Recibiendo datos movimiento ${direccion}`);
   });
 
+  socket.on('direccionT',function(direccionT,jugador){
+    for(let i=0; i<jugadores.length;i++){
+      if(jugadores[i].username==jugador.username){
+        jugadorActual = jugadores[i];
+        jugadores[i].miTanque.mueveTorreta(direccionT);
+      }
+    }
+  });
+
     //Crea un usuario, lo registra en la BD y lo envia al cliente con la clave 'newJugador'.
 	socket.on('datosLogin', function(datosLogin){
         //Cuando meten datosLogin para acceder un usuario--->
@@ -334,6 +343,26 @@ class Tanque {
             default:
                 break;
         }
+    }
+    mueveTorreta = function(direccionT){
+      if(direccionT!=69){
+        switch(direccionT){
+          case 0:
+            this.posicionCanon=direccionT;
+            break;
+          case 1:
+            this.posicionCanon=direccionT;
+            break;
+          case 2:
+            this.posicionCanon=direccionT;
+            break;
+          case 3:
+            this.posicionCanon=direccionT;
+            break;
+          default:
+            break;
+        }
+      }
     }
     //llama a un metodo u otro en funcion del parametro pasado.
     toString=function(){

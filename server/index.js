@@ -13,6 +13,8 @@ const mongoose = require('mongoose');
 let usuariosbd = [];
 let jugadores = [];
 let jugadorActual = null;
+const sleep = (waitTimeInMs) => new Promise(resolve => setTimeout(resolve, waitTimeInMs));
+
 //traigo esquema de datos de usuario
 const Usuario = require('../models/usuario');
 //Creamos el tablero. Aqui se almacenaran los tanques

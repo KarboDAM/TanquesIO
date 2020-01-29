@@ -4,8 +4,8 @@ var app = express();
 var server = require('http').Server(app);
 //
 var io = require('socket.io')(server);
-// npm i -S -body-parser ===> 
-//Instalamos una libreria que nos permite todos esos mensajes de tipo res (como los POST), parsearslos, tratar y recogerlos 
+// npm i -S -body-parser ===>
+//Instalamos una libreria que nos permite todos esos mensajes de tipo res (como los POST), parsearslos, tratar y recogerlos
 const bodyParser = require("body-parser");//TODO: Mirar si sobra.
 //Instalamos librería mongoose para utilizar mongodb en nuestro proyecto. (npm i -S mongoose)
 const mongoose = require('mongoose');
@@ -88,7 +88,15 @@ io.sockets.on('connection', function(socket){
         }
 
     });
-  socket.on('direccion',function(direccion){
+  socket.on('direccion',function(direccion,jugador){
+    for ( let i=0; i<jugadores.length; i++) {
+      if(jugadores[i].username==jugador.username) {
+        jugadorActual = jugadores[i];
+        jugadores[i].miTanque.mueve(direccion);
+
+      }
+
+    }
     //Jugador.miTanque.mueve(direccion);
     console.log(`Recibiendo datos movimiento ${direccion}`);
   });
@@ -136,17 +144,17 @@ io.sockets.on('connection', function(socket){
                             jugadores.push(player);
                             //Acceder----> Crear tanque para este nuevo usuario
                             accederJuego(player);
-                        }    
-                    }); 
+                        }
+                    });
                 } else {
-                    
+
                     var estaJugando = false;
                     //Compruebo que el usuario no este jugando ya...
                     for ( var j=0; j<jugadores.length; j++ ) {
                         if( datosLogin.username==jugadores[j].username ) {
                             estaJugando = true;
                             socket.emit('yaestasjugando');
-                        }                
+                        }
                     }
                     if(!estaJugando) {
                     //TODO: Acceder a mongo para leer la puntuacion.
@@ -158,7 +166,7 @@ io.sockets.on('connection', function(socket){
                     accederJuego(player);
 
                     }
-                } 
+                }
             }
         });
     });
@@ -251,31 +259,7 @@ class Tanque {
         //MANOLO: Modifica las variables posicionX y posicionY del tanque en funcion metodo.
         //Mueve de uno en uno.
         //TODO: Mantener pulsado.
-        function mueveDerecha(){this.positionX+=1;}
-        function mueveIzquierda(){this.positionX-=1;}
-        function mueveArriba(){this.positionY-=1;}
-        function mueveAbajo(){this.PositionY+=1;}
 
-        //llama a un metodo u otro en funcion del parametro pasado.
-        function mueve(direccion){
-            switch(direccion)
-            {
-                case 0:
-                    mueveDerecha();                   
-                    break;
-                case 1:
-                    mueveIzquierda();
-                    break;
-                case 2:
-                    mueveArriba();
-                    break;
-                case 3:
-                    mueveAbajo();
-                    break;
-                default:
-                    break;
-            }
-        }
         //Que devuelva true/false si hay un objeto con el mismo nombre.
         function compruebaPosicion(posX, posY){
             if(window.tablero[posX][posY]!=null){
@@ -287,8 +271,50 @@ class Tanque {
         }
         //TODO: Getters & Setters
     }
+
+
+
     dispara = function() {
-        new Bala(this.positionX,this.positionY,this.posicionCanon,this.nombre);
+        this.bala = new Bala(this.positionX,this.positionY,this.posicionCanon,this.nombre);
+    }
+
+    mueveDerecha = function(){
+
+
+    }
+    mueveIzquierda = function(){
+
+    }
+    mueveArriba = function(){
+
+    }
+    mueveAbajo = function(){
+
+    }
+
+    //llama a un metodo u otro en funcion del parametro pasado.
+    mueve = function(direccion){
+        switch(direccion)
+        {
+            case 0:
+            this.positionX+=1;
+            io.emit('mueveTanque',jugadorActual);
+                break;
+            case 1:
+            this.positionX-=1;
+            io.emit('mueveTanque',jugadorActual);
+                break;
+            case 2:
+            this.positionY-=1;
+            io.emit('mueveTanque',jugadorActual);
+                break;
+            case 3:
+            this.positionY+=1;
+            io.emit('mueveTanque',jugadorActual);
+                break;
+            default:
+                break;
+        }
     }
 
 

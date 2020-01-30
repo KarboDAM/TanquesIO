@@ -25,7 +25,7 @@ function dispara() {
 }
 socket.on('balaVa', function(jugador){
     console.log(jugador);
-
+    $(`#bala-${jugador.username}`).remove();
     let posicionX = jugador.miTanque.bala.posX*45;
     let posicionY = jugador.miTanque.bala.posY*25;
     //todos los tanques son rojos en principio

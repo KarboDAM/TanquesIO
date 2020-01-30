@@ -12,9 +12,10 @@ const mongoose = require('mongoose');
 //variables globales donde almaceno los jugadores...
 let usuariosbd = [];
 let jugadores = [];
-let jugadorActual = null;//Que coño hace esto?
-const sleep = (waitTimeInMs) => new Promise(resolve => setTimeout(resolve, waitTimeInMs));
-
+let jugadorActual = null;
+async function sleep(millis) {
+    return new Promise(resolve => setTimeout(resolve, millis));
+}
 //traigo esquema de datos de usuario
 const Usuario = require('../models/usuario');
 //Creamos el tablero. Aqui se almacenaran los tanques
@@ -75,7 +76,7 @@ io.sockets.on('connection', function(socket){
     }
 
     socket.on('dispara', function(jugador){
-        console.log("recibo disparon con el jugador en server");
+        console.log("recibo disparo con el jugador en server");
         for(let i=0; i<jugadores.length; i++) {
             if(jugadores[i].username=jugador.username) {
                 jugadorActual = jugadores[i];
@@ -329,6 +330,7 @@ class Tanque {
     }
     dispara = function() {
         this.bala = new Bala(this.positionX,this.positionY,this.posicionCanon,this.nombre);
+        this.bala.mueveBala();
     }
     /*
         Llama al metodo movimiento dependiendo del parametro.
@@ -376,43 +378,46 @@ class Tanque {
 class Bala {
 
     constructor(posX,posY,posicionCanon,nombre) {
-
         this.nombre=nombre;
         this.direccion=posicionCanon;
         this.posX=posX;
         this.posY=posY;
-        this.sigue=true;
+    }
 
-        function mueveBala(){
-            while(this.sigue){//Agregar condicion del tablero
-                movimiento(this.direccion);
-                sleep(1000).then(() => {
-                        io.emit('balaVa',jugadorActual);
-                });
-            }
-        }
-        function mueveDerecha(){}
-        function mueveIzquierda(){}
-        function mueveArriba(){}
-        function mueveAbajo(){}
-        function movimiento(direccion){
-            switch(direccion){
-                case 0:
-                    mueveDerecha();
-                    break;
-                case 1:
-                    mueveIzquierda();
-                    break;
-                case 2:
-                    mueveArriba();
-                    break;
-                case 3:
-                    mueveAbajo();
-                    break;
-                default:
-                    break;
-            }
-        }
+    mueveBala = async function() {
+
+        switch(this.posicionCanon) {
+            case 0:
+                while(this.posX<19){
+                    this.posX++;
+                    await sleep(300);
+                    io.emit('balaVa',jugadorActual);    
+                }
+                break;
+            case 1:
+                while(this.posX>0){
+                    this.posX--;
+                    await sleep(300);
+                    io.emit('balaVa',jugadorActual);    
+                }
+                break;
+            case 2:
+                while(this.posY>0){
+                    this.posY--;
+                    await sleep(300);
+                    io.emit('balaVa',jugadorActual);    
+                }
+                break;
+            case 3:
+                while(this.posY<19){
+                    this.posY++;
+                    await sleep(300);
+                    io.emit('balaVa',jugadorActual);    
+                }
+                break;
+          default:
+              break;
+          }
     }
 
     toString=function(){

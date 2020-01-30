@@ -23,6 +23,48 @@ function dispara() {
 
     }
 }
+socket.on('actualizaTablero', function(tablero)
+{
+  //console.log(tablero);
+  for (var i = 0; i < tablero.length; i++) {
+    for (var j = 0; j < tablero.length; j++) {
+
+        if(tablero[i][j]!=undefined){
+          console.log(tablero[i][j]);
+          console.log("En "+i+" - "+j+" hay algo"+tablero[i][j].tipo);
+
+          if(tablero[i][j].tipo=="Tanque"){
+            console.log("Es un tanque");
+            mueveTanque(tablero[i][j]);
+          }
+          else if(tablero[i][j].tipo=="Bala"){
+            console.log("Es una bala");
+            dibujaBala(tablero[i][j]);
+          }
+        }
+    }
+  }
+});
+
+function dibujaBala(bala){
+    console.log(bala);
+    $(`#bala-${bala.nombre}`).remove();
+    let posicionX = bala.posX*45;
+    let posicionY = bala.posY*25;
+    //todos los tanques son rojos en principio
+    let color = "red";
+    // pero miro si el tanque es mio o de otro usurio, para ello comparo el nombre del usuario que es dueño con mi variable "minombre"
+    //si es mi tanque lo pinto de azul, y sera el tanque que maneje
+    if(bala.nombre==minombre) {
+        color = "blue";
+        //elimino el div del login, ya no me interesa poder introducir mas tanques con ese usuario
+    }
+
+    $("#tablero").append(`<div class="bala" id="bala-${bala.nombre}" style="position: absolute; top: ${posicionY}px; left: ${posicionX}px; border-radius:50%; width: 25px; height: 25px;background-color: ${color}"> </div>`);
+
+    console.log(posicionX);
+}
+
 socket.on('balaVa', function(jugador){
     console.log(jugador);
     $(`#bala-${jugador.username}`).remove();
@@ -61,23 +103,22 @@ socket.on('ContraseñaIncorrecta',function(){
     alert("Contraseña Incorrecta!");
 });
 
-function mueveTanque(jugador) {
-    jugadorActual = jugador;
+function mueveTanque(tanque) {
 
-  $(`#tanque-${jugador.username}`).remove();
-  let posicionX = jugador.miTanque.positionX*45;
-  let posicionY = jugador.miTanque.positionY*25;
+  $(`#tanque-${tanque.nombre}`).remove();
+  let posicionX = tanque.positionX*45;
+  let posicionY = tanque.positionY*25;
   //todos los tanques son rojos en principio
   let color = "red";
   // pero miro si el tanque es mio o de otro usurio, para ello comparo el nombre del usuario que es dueño con mi variable "minombre"
   //si es mi tanque lo pinto de azul, y sera el tanque que maneje
-  if(jugador.username==minombre) {
+  if(tanque.nombre==minombre) {
       color = "blue";
       //elimino el div del login, ya no me interesa poder introducir mas tanques con ese usuario
       $("#login").empty();
-      $("#tablero").append(`<div class="tanque" id="tanque-${jugador.username}" style="position: absolute; top: ${posicionY}px; left: ${posicionX}px; width: 45px; height: 25px;"><img src="tank/ab.png"></img> </div>`);
+      $("#tablero").append(`<div class="tanque" id="tanque-${tanque.nombre}" style="position: absolute; top: ${posicionY}px; left: ${posicionX}px; width: 45px; height: 25px;"><img src="tank/ab.png"></img> </div>`);
   }else{
-      $("#tablero").append(`<div class="tanque" id="tanque-${jugador.username}" style="position: absolute; top: ${posicionY}px; left: ${posicionX}px; width: 45px; height: 25px;"><img src="tank/rb.png"></img> </div>`);
+      $("#tablero").append(`<div class="tanque" id="tanque-${tanque.nombre}" style="position: absolute; top: ${posicionY}px; left: ${posicionX}px; width: 45px; height: 25px;"><img src="tank/rb.png"></img> </div>`);
   }
 
 

@@ -103,15 +103,57 @@ socket.on('ContraseñaIncorrecta',function(){
     alert("Contraseña Incorrecta!");
 });
 
+<<<<<<< Updated upstream
 function mueveTanque(tanque) {
+=======
+
+
+
+
+function mueveTanque(jugador,direccionT) {
+    jugadorActual = jugador;
+>>>>>>> Stashed changes
 
   $(`#tanque-${tanque.nombre}`).remove();
   let posicionX = tanque.positionX*45;
   let posicionY = tanque.positionY*25;
   //todos los tanques son rojos en principio
-  let color = "red";
+  let color = "r";
+  let direccion ="";
+  let fuente = jugador.miTanque.posicionCanon;
+
+  if(direccionT!=null){
+    fuente = direccionT;
+  }
+
+  switch(fuente) {
+      case 0:
+        direccion= "r";
+
+        break;
+      case 1:
+        direccion= "l";
+
+        break;
+      case 2:
+        direccion= "u";
+
+        break;
+      case 3:
+        direccion= "d";
+
+        break;
+        default: 
+        direccion = "r";
+        break;
+
+
+
+
+  }
   // pero miro si el tanque es mio o de otro usurio, para ello comparo el nombre del usuario que es dueño con mi variable "minombre"
   //si es mi tanque lo pinto de azul, y sera el tanque que maneje
+<<<<<<< Updated upstream
   if(tanque.nombre==minombre) {
       color = "blue";
       //elimino el div del login, ya no me interesa poder introducir mas tanques con ese usuario
@@ -119,6 +161,15 @@ function mueveTanque(tanque) {
       $("#tablero").append(`<div class="tanque" id="tanque-${tanque.nombre}" style="position: absolute; top: ${posicionY}px; left: ${posicionX}px; width: 45px; height: 25px;"><img src="tank/ab.png"></img> </div>`);
   }else{
       $("#tablero").append(`<div class="tanque" id="tanque-${tanque.nombre}" style="position: absolute; top: ${posicionY}px; left: ${posicionX}px; width: 45px; height: 25px;"><img src="tank/rb.png"></img> </div>`);
+=======
+  if(jugador.username==minombre) {
+      color = "b";
+      //elimino el div del login, ya no me interesa poder introducir mas tanques con ese usuario
+      $("#login").empty();
+      $("#tablero").append(`<div class="tanque" id="tanque-${jugador.username}" style="position: absolute; top: ${posicionY}px; left: ${posicionX}px; width: 45px; height: 25px;"><img src="tank/${color}${direccion}.png"></img> </div>`);
+  }else{
+      $("#tablero").append(`<div class="tanque" id="tanque-${jugador.username}" style="position: absolute; top: ${posicionY}px; left: ${posicionX}px; width: 45px; height: 25px;"><img src="tank/${color}${direccion}.png"></img> </div>`);
+>>>>>>> Stashed changes
   }
 
 
@@ -135,21 +186,50 @@ function mostrarUsuarios(usuarios){
 socket.on('newjugador',function(jugador){
     //coloco el tanque
     jugadores.push(jugador);
+    $(`#tanque-${jugador.username}`).remove();
+  let posicionX = jugador.miTanque.positionX*45;
+  let posicionY = jugador.miTanque.positionY*25;
+  //todos los tanques son rojos en principio
+  let color = "r";
+  let direccion ="";
+
+  switch(jugador.miTanque.posicionCanon) {
+      case 0:
+        direccion= "r";
+
+        break;
+      case 1:
+        direccion= "l";
+
+        break;
+      case 2:
+        direccion= "u";
+
+        break;
+      case 3:
+        direccion= "d";
+
+        break;
+        default: 
+        direccion = "r";
+        break;
+
+
+
+
+  }
+  // pero miro si el tanque es mio o de otro usurio, para ello comparo el nombre del usuario que es dueño con mi variable "minombre"
+  //si es mi tanque lo pinto de azul, y sera el tanque que maneje
+  if(jugador.username==minombre) {
     jugadorActual = jugador;
-    let posicionX = jugador.miTanque.positionX*45;
-    let posicionY = jugador.miTanque.positionY*25;
-    //todos los tanques son rojos en principio
-    let color = "red";
-    // pero miro si el tanque es mio o de otro usurio, para ello comparo el nombre del usuario que es dueño con mi variable "minombre"
-    //si es mi tanque lo pinto de azul, y sera el tanque que maneje
-    if(jugador.username==minombre) {
-        color = "blue";
-        //elimino el div del login, ya no me interesa poder introducir mas tanques con ese usuario
-        $("#login").empty();
-        $("#tablero").append(`<div class="tanque" id="tanque-${jugador.username}" style="position: absolute; top: ${posicionY}px; left: ${posicionX}px; width: 45px; height: 25px;"><img src="tank/ab.png"></img> </div>`);
-    }else{
-        $("#tablero").append(`<div class="tanque" id="tanque-${jugador.username}" style="position: absolute; top: ${posicionY}px; left: ${posicionX}px; width: 45px; height: 25px;"><img src="tank/rb.png"></img> </div>`);
-    }
+
+      color = "b";
+      //elimino el div del login, ya no me interesa poder introducir mas tanques con ese usuario
+      $("#login").empty();
+      $("#tablero").append(`<div class="tanque" id="tanque-${jugador.username}" style="position: absolute; top: ${posicionY}px; left: ${posicionX}px; width: 45px; height: 25px;"><img src="tank/${color}${direccion}.png"></img> </div>`);
+  }else{
+      $("#tablero").append(`<div class="tanque" id="tanque-${jugador.username}" style="position: absolute; top: ${posicionY}px; left: ${posicionX}px; width: 45px; height: 25px;"><img src="tank/${color}${direccion}.png"></img> </div>`);
+  }
 
 });
 
@@ -165,9 +245,13 @@ function presionar(e){
     arriba = true;
     if(arriba==true){
       direccion = 2;
+      //var tanque = document.getElementById("tanque-"+jugadorActual.username).innerHTML="";
+      //$("#tablero").append(`<div class="tanque" id="tanque-${jugadorActual}" style="position: absolute; top: ${jugadorActual.miTanque.posicionY}px; left: ${jugadorActual.miTanque.posicionX}px; width: 45px; height: 25px;"><img src="tank/au.png"></img> </div>`);
+      //$("tanque-"+jugadorActual.username).load("<img src='imagenes/au.png'>");
       socket.emit("direccion",direccion,jugadorActual);
-
+      
       console.log(direccion);
+      console.log(jugadorActual);
     }
   }
   if(e.keyCode === 68){
@@ -242,6 +326,7 @@ function presionarTorreta(e){
       direccionT = 2;
       console.log(direccionT);
       socket.emit("direccionT",direccionT,jugadorActual);
+      mueveTanque(jugadorActual,direccionT);
     }
   }
   if(e.keyCode === 39){
@@ -250,6 +335,9 @@ function presionarTorreta(e){
       direccionT = 0;
       console.log(direccionT);
       socket.emit("direccionT",direccionT,jugadorActual);
+      mueveTanque(jugadorActual,direccionT);
+
+
     }
   }
   if(e.keyCode === 40){
@@ -258,6 +346,9 @@ function presionarTorreta(e){
       direccionT = 3;
       console.log(direccionT);
       socket.emit("direccionT",direccionT,jugadorActual);
+      mueveTanque(jugadorActual,direccionT);
+
+
     }
   }
   if(e.keyCode === 37){
@@ -266,6 +357,9 @@ function presionarTorreta(e){
       direccionT = 1;
       console.log(direccionT);
       socket.emit("direccionT",direccionT,jugadorActual);
+      mueveTanque(jugadorActual,direccionT);
+
+
     }
   }
 }
@@ -276,6 +370,8 @@ function soltarTorreta(e){
     if(arribaT==false){
       direccionT = 69;
       console.log(direccionT);
+
+
     }
   }
   if(e.keyCode === 39){
@@ -283,6 +379,8 @@ function soltarTorreta(e){
     if(dchT==false){
       direccionT = 69;
       console.log(direccionT);
+
+
     }
   }
   if(e.keyCode === 40){
@@ -290,6 +388,8 @@ function soltarTorreta(e){
     if(abajoT==false){
       direccionT = 69;
       console.log(direccionT);
+
+
     }
   }
   if(e.keyCode === 37){
@@ -297,6 +397,8 @@ function soltarTorreta(e){
     if(izq==false){
       direccionT = 69;
       console.log(direccionT);
+
+
     }
   }
 }

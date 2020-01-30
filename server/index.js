@@ -89,8 +89,9 @@ io.sockets.on('connection', function(socket){
         for(let i=0; i<jugadores.length; i++) {
             if(jugadores[i].username=jugador.username) {
                 jugadorActual = jugadores[i];
-                console.log(jugadores[i].miTanque);
                 jugadores[i].miTanque.dispara();
+                console.log(jugadores[i].miTanque);
+
             }
         }
     });
@@ -378,6 +379,8 @@ class Tanque {
     mueveTorreta = function(direccionT){
       if(direccionT!=69)
         this.posicionCanon=direccionT;
+        io.emit("cambiaDireccion", jugadorActual);
+
     }
     toString=function(){
         return "Tanque";

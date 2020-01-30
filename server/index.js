@@ -4,8 +4,8 @@ var app = express();
 var server = require('http').Server(app);
 //
 var io = require('socket.io')(server);
-// npm i -S -body-parser ===> 
-//Instalamos una libreria que nos permite todos esos mensajes de tipo res (como los POST), parsearslos, tratar y recogerlos 
+// npm i -S -body-parser ===>
+//Instalamos una libreria que nos permite todos esos mensajes de tipo res (como los POST), parsearslos, tratar y recogerlos
 const bodyParser = require("body-parser");//TODO: Mirar si sobra.
 //Instalamos librería mongoose para utilizar mongodb en nuestro proyecto. (npm i -S mongoose)
 const mongoose = require('mongoose');
@@ -22,14 +22,15 @@ const Usuario = require('../models/usuario');
 var tamanoTablero=20;
 var tablero=new Array(tamanoTablero);
 for (var i = 0; i < tablero.length; i++) {
-        tablero[i]=new Array(tamanoTablero);
+    tablero[i]=new Array(tamanoTablero);
 }
 
+//Lo hizo un mago, no tocar.
+mongoose.set('useFindAndModify', false);
 
-mongoose.set('useFindAndModify', false);//Lo hizo un mago, no tocar.
-
+//TODO: Mirar si sobra.
 //añadimos esas capas a nuestro server express
-app.use(bodyParser.urlencoded({ extended: false }));//TODO: Mirar si sobra.
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 //middelwhere? express donde le indicamos la parte publica que queremos que sea estatica
@@ -72,7 +73,6 @@ io.sockets.on('connection', function(socket){
     //
     for ( var j=0; j<jugadores.length; j++ ) {
         io.emit('newjugador',jugadores[j]);
-
     }
 
     socket.on('dispara', function(jugador){
@@ -82,22 +82,41 @@ io.sockets.on('connection', function(socket){
                 jugadorActual = jugadores[i];
                 console.log(jugadores[i].miTanque);
                 jugadores[i].miTanque.dispara();
-
-
             }
-
         }
-
     });
 
+    socket.on('direccion',function(direccion){
+        //Jugador.miTanque.mueve(direccion);
+        console.log(`Recibiendo datos movimiento ${direccion}`);
+    });
+  socket.on('direccion',function(direccion,jugador){
+    for ( let i=0; i<jugadores.length; i++) {
+      if(jugadores[i].username==jugador.username) {
+        jugadorActual = jugadores[i];
+        jugadores[i].miTanque.mueve(direccion);
 
+      }
 
-    
+    }
+    //Jugador.miTanque.mueve(direccion);
+    console.log(`Recibiendo datos movimiento ${direccion}`);
+  });
+
+  socket.on('direccionT',function(direccionT,jugador){
+    for(let i=0; i<jugadores.length;i++){
+      if(jugadores[i].username==jugador.username){
+        jugadorActual = jugadores[i];
+        jugadores[i].miTanque.mueveTorreta(direccionT);
+      }
+    }
+  });
+
     //Crea un usuario, lo registra en la BD y lo envia al cliente con la clave 'newJugador'.
-	socket.on('datosLogin', function(datosLogin) {
+	socket.on('datosLogin', function(datosLogin){
         //Cuando meten datosLogin para acceder un usuario--->
         console.log(`El usuario se llama ${datosLogin.username} con contraseña ${datosLogin.password}`);
-        
+
         let usuario = new Usuario();
         usuario._id = datosLogin.username;
         usuario.password = datosLogin.password;
@@ -136,20 +155,20 @@ io.sockets.on('connection', function(socket){
                             jugadores.push(player);
                             //Acceder----> Crear tanque para este nuevo usuario
                             accederJuego(player);
-                        }    
-                    }); 
+                        }
+                    });
                 } else {
-                    
+
                     var estaJugando = false;
                     //Compruebo que el usuario no este jugando ya...
                     for ( var j=0; j<jugadores.length; j++ ) {
                         if( datosLogin.username==jugadores[j].username ) {
                             estaJugando = true;
                             socket.emit('yaestasjugando');
-                        }                
+                        }
                     }
                     if(!estaJugando) {
-                        //TODO: Acceder a mongo para leer la puntuacion.
+                    //TODO: Acceder a mongo para leer la puntuacion.
                     //Existe ese usuario con ese nombre y contraseña
                     //Añado jugador a nuestro array jugadores
                     let player = new Jugador(datosLogin.username, 0);
@@ -158,8 +177,7 @@ io.sockets.on('connection', function(socket){
                     accederJuego(player);
 
                     }
-                    
-                } 
+                }
             }
         });
     });
@@ -168,7 +186,7 @@ io.sockets.on('connection', function(socket){
 //Mandar objeto jugador a todos los clientes con la clave 'newJugador'.
 function accederJuego(jugador) {
     //Meter un nuevo tanque al juego.
-    //Codigo que genera tanque de ese jugador 
+    //Codigo que genera tanque de ese jugador
     //Codigo que manda ese jugador con tanque a los clientes---->
     io.emit('newjugador',jugador);
 }
@@ -192,7 +210,7 @@ function getTanques()
 	return Tanques;
 }
 
-//TODO: Cliente. Modificacion del color del tanque.
+
 class Jugador {
     constructor(username, puntuacion) {
         //this.id;
@@ -203,120 +221,169 @@ class Jugador {
 };
 
 class Tanque {
-    /*
-    Posiciones:
-        0 - Derecha
-        1 - Izquierda
-        2 - Arriba
-        3 - Abajo
-    */
-    //Los metodos dentro del constructor son "privates" mientras las que estan fuera "public".
-    //window.tablero es para acceder a la variable global.
     constructor() {
-
-        let variables=generaPosicion();
-        this.positionX=variables[0];
-        this.positionY=variables[1];
+        this.nombre="PussyDestroyer";
+        let posiciones=generaPosicion();
+        this.positionX=posiciones[0];
+        this.positionY=posiciones[1];
         this.retraso=3;
         this.vidas=2;
         this.bala=null;
         this.horaUltimoDisparo;
-        //JAIRO: Asignacion de imagen.
-        this.imagen;
-        //Asignamos una posicion del canon por defecto.
         this.posicionCanon=0;
-        
-        //Metodos
+        this.actualizaPosicion();
+
         /*
-        TODO:
-        this.dispara=function(){
-            //Tener en cuenta la posicion canon
-            if(horaUltimoDisparo-horaActual>=retraso){
-                //Mata.
-            }
-        }
+            Genera posiciones aleatorias hasta conseguir una libre.
+                @return:
+                    posiciones -> Array con posX e posY en los indices 0 y 1 respectivamente.
         */
-        //Devuelve un array con posX-posY libres en el tablero.
         function generaPosicion() {
-            let ocupada = true;
             let posx = 0;
             let posy = 0;
-            while (ocupada) {
-                ocupada = false;
-                posx = Math.floor(Math.random() * 19)+1;
-                posy = Math.floor(Math.random() * 19)+1;
-                for (let i = 0; i < jugadores.length; i++) {
-                    if ((posx - jugadores[i].miTanque.positionX ==-1 || posx - jugadores[i].miTanque.positionX==0 || posx - jugadores[i].miTanque.positionX==1) && (posy - jugadores[i].miTanque.positionY ==-1 || posy - jugadores[i].miTanque.positionY ==0 || posy - jugadores[i].miTanque.positionY ==1)) {
-                        ocupada = true;
-                    }
-                }
-            }
 
-            let variables=[];
-            variables.push(posx);
-            variables.push(posy);
+            do{
+                posx = Math.floor(Math.random() * tamanoTablero);
+                posy = Math.floor(Math.random() * tamanoTablero);
+            }while(tablero[posx][posy]!=undefined) 
 
-            return variables;
+            let posiciones=[];
+            posiciones.push(posx);
+            posiciones.push(posy);
+
+            return posiciones;
         };
-        //MANOLO: Modifica las variables posicionX y posicionY del tanque en funcion metodo.
-        //Mueve de uno en uno.
-        //TODO: Mantener pulsado.
-        function mueveDerecha(){}
-        function mueveIzquierda(){}
-        function mueveArriba(){}
-        function mueveAbajo(){}
-        //llama a un metodo u otro en funcion del parametro pasado.
-        function mueve(direccion){
-            switch(direccion)
-            {
+    }
+
+    /*
+        Mueve el tanque dependiendo de los parametros.
+        @params:
+            sumaX -> Numero a sumar a positionX (para restar usar num negativos).
+            sumaY -> Numero a sumar a positionY (para restar usar num negativos).
+    */
+    movimiento=function(sumaX, sumaY){
+        var nuevaX=this.positionX+sumaX;
+        var nuevaY=this.positionY+sumaY;
+
+        //Primero comprobamos que las posiciones entran en el tablero
+        if(nuevaX<tamanoTablero && nuevaX>=0 && nuevaY<tamanoTablero && nuevaY>=0 ){
+            //Verificamos el contenido de la nueva pos.
+            var contenido=this.compruebaPosicion(nuevaX,nuevaY);
+            switch(contenido){
                 case 0:
-                    mueveDerecha();
+                    //Verificamos el contenido de la antigua posicion
+                    //En caso de que haya quedado un tanque con nuestro nombre lo borramos.
+                    contenido=this.compruebaPosicion(this.positionX,this.positionY);
+                    if(contenido==1)
+                        tablero[this.positionX][this.positionY]=undefined;
+
+                    this.positionX=nuevaX;
+                    this.positionY=nuevaY;
                     break;
                 case 1:
-                    mueveIzquierda();
+                    //Si hay un tanque con nuestro nombre tenemos un problema.
+                    console.log("Error: tenemos tanque duplicado");
                     break;
                 case 2:
-                    mueveArriba();
-                    break;
-                case 3:
-                    mueveAbajo();
+                    //Si hay una bala con nuestro nombre tenemos otro problema.
+                    console.log("Error: como llego esa bala ahi?");
                     break;
                 default:
                     break;
             }
         }
-        //Que devuelva true/false si hay o no un tanque en esa posicion
-        function compruebaPosicion(posX, posY){
-            return (window.tablero!=null)
-        }
-        function actualizaPosicion(){
-            window.tablero[this.positionX][this.positionY]=this;
-        }
-        //TODO: Getters & Setters
     }
-
+    /*
+        Verifica lo que hay en el tablero en las posX e posY.
+        @params:
+            posX -> Columna.
+            posY -> Fila.
+        @returns:
+            0 -> No hay nada.
+            1 -> Hay un tanque con nuestro nombre.
+            2 -> Hay una bala con nuestro nombre.
+            3 -> Otros
+    */
+    compruebaPosicion=function(posX, posY){
+        if(tablero[posX][posY]===undefined){
+            return 0;
+        }
+        else{
+            console.log(tablero[posX][posY].getNombre()==this.getNombre());
+            if(tablero[posX][posY].getNombre()==this.getNombre()){
+                if(tablero[posX][posY].toString()=="Tanque")
+                    return 1;
+                else
+                    return 2;
+            }
+            else{
+                return 3;
+            }
+        }
+    }
+    /*
+        Guarda al tanque en el tablero en la posicion que le corresponde.
+        Ej: Un tanque con las posX=5,posY=4 se guardaria en tablero[5][4].
+    */
+    actualizaPosicion=function(){
+        tablero[this.positionX][this.positionY]=this;
+    }
     dispara = function() {
-        this.bala = new Bala(this.positionX,this.positionY,this.posicionCanon);
+        this.bala = new Bala(this.positionX,this.positionY,this.posicionCanon,this.nombre);
         this.bala.mueveBala();
     }
-
-
+    /*
+        Llama al metodo movimiento dependiendo del parametro.
+        @param:
+            direccion -> numero que representa la direccion (0 dch, 1izq, 2arr, 3abj).
+    */
+    mueve = function(direccion){
+        switch(direccion)
+        {
+            case 0:
+            this.movimiento(1,0);
+                break;
+            case 1:
+            this.movimiento(-1,0);
+                break;
+            case 2:
+            this.movimiento(0,-1);
+                break;
+            case 3:
+            this.movimiento(0,+1);
+                break;
+            default:
+                break;
+        }
+        this.actualizaPosicion();
+        io.emit('mueveTanque',jugadorActual);
+    }
+    /*
+        Modifica la direccion de la torreta.
+        @param:
+            direccionT -> numero que representa la direccion (0 dch, 1izq, 2arr, 3abj).
+    */
+    mueveTorreta = function(direccionT){
+      if(direccionT!=69)
+        this.posicionCanon=direccionT;
+    }
+    toString=function(){
+        return "Tanque";
+    }
+    getNombre=function(){
+        return this.nombre;
+    }
 };
 
 class Bala {
 
-    constructor(posX,posY) {
-
+    constructor(posX,posY,posicionCanon,nombre) {
+        this.nombre=nombre;
+        this.direccion=posicionCanon;
         this.posX=posX;
         this.posY=posY;
-        this.posicionCanon=2;
-           
     }
 
-    apuntaTorreta = function(direccionT) {
-        this.posicionCanon = direccionT;
-
-    }
     mueveBala = async function() {
 
         switch(this.posicionCanon) {
@@ -325,38 +392,35 @@ class Bala {
                     this.posX++;
                     await sleep(300);
                     io.emit('balaVa',jugadorActual);    
-            }
+                }
                 break;
             case 1:
                 while(this.posX>0){
                     this.posX--;
                     await sleep(300);
                     io.emit('balaVa',jugadorActual);    
-            }
+                }
                 break;
             case 2:
                 while(this.posY>0){
                     this.posY--;
                     await sleep(300);
                     io.emit('balaVa',jugadorActual);    
-            }
+                }
                 break;
             case 3:
                 while(this.posY<19){
                     this.posY++;
                     await sleep(300);
                     io.emit('balaVa',jugadorActual);    
-            }
+                }
                 break;
-
-
-
-        }
-     
-        
-
-
+          default:
+              break;
+          }
     }
 
-
+    toString=function(){
+        return "Bala";
+    }
 }

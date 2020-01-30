@@ -331,6 +331,7 @@ class Tanque {
     dispara = function() {
         this.bala = new Bala(this.positionX,this.positionY,this.posicionCanon,this.nombre);
         this.bala.mueveBala();
+
     }
     /*
         Llama al metodo movimiento dependiendo del parametro.
@@ -378,10 +379,12 @@ class Tanque {
 class Bala {
 
     constructor(posX,posY,posicionCanon,nombre) {
+
         this.nombre=nombre;
-        this.direccion=posicionCanon;
+        this.posicionCanon=posicionCanon;
         this.posX=posX;
         this.posY=posY;
+           
     }
 
     mueveBala = async function() {

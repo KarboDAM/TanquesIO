@@ -395,37 +395,32 @@ class Bala {
                     this.posX++;
                     await sleep(300);
                     io.emit('balaVa',jugadorActual);    
-            }
+                }
                 break;
             case 1:
                 while(this.posX>0){
                     this.posX--;
                     await sleep(300);
                     io.emit('balaVa',jugadorActual);    
-            }
+                }
                 break;
             case 2:
                 while(this.posY>0){
                     this.posY--;
                     await sleep(300);
                     io.emit('balaVa',jugadorActual);    
-            }
+                }
                 break;
             case 3:
                 while(this.posY<19){
                     this.posY++;
                     await sleep(300);
                     io.emit('balaVa',jugadorActual);    
-            }
+                }
                 break;
-
-
-
-        }
-     
-        
-
-
+          default:
+              break;
+          }
     }
 
     toString=function(){

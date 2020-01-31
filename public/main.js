@@ -146,6 +146,7 @@ var direccion = 69;
 document.addEventListener('keydown',presionar);
 
 function presionar(e){
+
   if( jugadorActual!= null) {
     if(e.keyCode === 87){
       arriba = true;

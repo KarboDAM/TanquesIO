@@ -18,6 +18,8 @@ async function sleep(millis) {
     return new Promise(resolve => setTimeout(resolve, millis));
 }
 
+/////////
+//Envia datos del tablero cada 150ms al cliente
 async function enviaTablero(){
     while(true){
         io.emit('actualizaTablero',tablero);
@@ -25,6 +27,11 @@ async function enviaTablero(){
     }
 }
 enviaTablero();
+
+////////
+
+
+
 //traigo esquema de datos de usuario
 const Usuario = require('../models/usuario');
 //Creamos el tablero. Aqui se almacenaran los tanques
@@ -213,14 +220,14 @@ class Jugador {
         //this.id;
         this.username = username;
         this.puntuacion = puntuacion;
-        this.miTanque = new Tanque();
+        this.miTanque = new Tanque(username);
     }
 };
 
 class Tanque {
-    constructor() {
+    constructor(username) {
         let posiciones=generaPosicion();
-        this.nombre="PussyDestroyer";
+        this.nombre=username;
         this.positionX=posiciones[0];
         this.positionY=posiciones[1];
         this.retraso=3;
@@ -460,6 +467,8 @@ class Bala {
             nuevaX+=incX;
             nuevaY+=incY;
         }
+
+        tablero[nuevaX-incX][nuevaY-incY] = undefined;
     }
     /*
         Guarda la bala en el tablero.

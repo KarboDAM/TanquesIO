@@ -25,6 +25,8 @@ function dispara() {
 }
 socket.on('actualizaTablero', function(tablero)
 {
+  //Limpiar tablero con cada llegada de datos nuevos.
+  $(`#tablero`).empty();
   //console.log(tablero);
   for (var i = 0; i < tablero.length; i++) {
     for (var j = 0; j < tablero.length; j++) {
@@ -48,7 +50,6 @@ socket.on('actualizaTablero', function(tablero)
 
 function dibujaBala(bala){
     console.log(bala);
-    $(`#bala-${bala.nombre}`).remove();
     let posicionX = bala.posX*45;
     let posicionY = bala.posY*25;
     //todos los tanques son rojos en principio
@@ -88,8 +89,6 @@ socket.on('ContraseñaIncorrecta',function(){
 
 function mueveTanque(tanque) {
 
-  $(`#tanque-${tanque.nombre}`).remove();
-  $(`#tanque-${jugadorActual.username}`).remove();
   let posicionX = tanque.positionX*45;
   let posicionY = tanque.positionY*25;
   //todos los tanques son rojos en principio

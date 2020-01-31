@@ -216,18 +216,19 @@ server.listen( 8080, function () {
 //
 
 class Jugador {
-    constructor(username, puntuacion) {
-        //this.id;
+    constructor(username, puntuacion=0,id) {
+
+        this.id;
         this.username = username;
         this.puntuacion = puntuacion;
-        this.miTanque = new Tanque(username);
+        this.miTanque = new Tanque(id);
     }
 };
 
 class Tanque {
-    constructor(username) {
+    constructor(id) {
         let posiciones=generaPosicion();
-        this.nombre=username;
+        this.id=id;
         this.positionX=posiciones[0];
         this.positionY=posiciones[1];
         this.retraso=3;
@@ -250,7 +251,7 @@ class Tanque {
             do{
                 posx = Math.floor(Math.random() * tamanoTablero);
                 posy = Math.floor(Math.random() * tamanoTablero);
-            }while(tablero[posx][posy]!=undefined) 
+            }while(tablero[posx][posy]!=undefined)
 
             let posiciones=[];
             posiciones.push(posx);
@@ -349,7 +350,7 @@ class Tanque {
     }
     dispara =async function() {
         console.log("Disparando");
-        this.bala=new Bala(this.positionX,this.positionY,this.posicionCanon,this.nombre);
+        this.bala=new Bala(this.positionX,this.positionY,this.posicionCanon,this.id);
     }
     /*
         Llama al metodo movimiento dependiendo del parametro.
@@ -390,14 +391,14 @@ class Tanque {
         return "Tanque";
     }
     getNombre=function(){
-        return this.nombre;
+        return this.id;
     }
 };
 
 class Bala {
 
-    constructor(posX,posY,posicionCanon,nombre) {
-        this.nombre=nombre;
+    constructor(posX,posY,posicionCanon,id) {
+        this.id=id;
         this.tipo="Bala";
         this.direccion=posicionCanon;
         this.posX=posX;
@@ -406,7 +407,7 @@ class Bala {
     }
 
     /*
-        Mueve a la bala en funcion de la direccion 
+        Mueve a la bala en funcion de la direccion
         hasta que salga del tablero o choque un enemigo.
     */
     dispara = function() {
@@ -421,7 +422,7 @@ class Bala {
                 incrementoX=-1;
                 break;
             case 2:
-                incrementoY=-1;    
+                incrementoY=-1;
                 break;
             case 3:
                 incrementoY=1;
@@ -451,18 +452,18 @@ class Bala {
 
             let viejaX=this.posX;
             let viejaY=this.posY;
-            
+
             this.posX=nuevaX;
             this.posY=nuevaY;
 
-            this.actualizaPosicion(); 
+            this.actualizaPosicion();
 
             contenido=this.compruebaPosicion(viejaX,viejaY);
             if(contenido==3)
-                tablero[viejaX][viejaY]=undefined;    
-    
+                tablero[viejaX][viejaY]=undefined;
+
             //io.emit('balaVa',jugadorActual);
-            await sleep(150);  
+            await sleep(150);
 
             nuevaX+=incX;
             nuevaY+=incY;
@@ -480,7 +481,7 @@ class Bala {
         return "Bala";
     }
     getNombre=function(){
-        return this.nombre;
+        return this.id;
     }
     /*
         Verifica lo que hay en el tablero en las posX e posY.

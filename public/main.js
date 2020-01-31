@@ -65,24 +65,7 @@ function dibujaBala(bala){
     console.log(posicionX);
 }
 
-socket.on('balaVa', function(jugador){
-    console.log(jugador);
-    $(`#bala-${jugador.username}`).remove();
-    let posicionX = jugador.miTanque.bala.posX*45;
-    let posicionY = jugador.miTanque.bala.posY*25;
-    //todos los tanques son rojos en principio
-    let color = "red";
-    // pero miro si el tanque es mio o de otro usurio, para ello comparo el nombre del usuario que es dueño con mi variable "minombre"
-    //si es mi tanque lo pinto de azul, y sera el tanque que maneje
-    if(jugador.username==minombre) {
-        color = "blue";
-        //elimino el div del login, ya no me interesa poder introducir mas tanques con ese usuario
-    }
 
-    $("#tablero").append(`<div class="bala" id="bala-${jugador.username}" style="position: absolute; top: ${posicionY}px; left: ${posicionX}px; border-radius:50%; width: 25px; height: 25px;background-color: ${color}"> </div>`);
-
-    console.log(posicionX);
-});
 //
 socket.on('datosusuarios',function(usuarios){
     mostrarUsuarios(usuarios);
@@ -136,7 +119,6 @@ function mostrarUsuarios(usuarios){
 socket.on('newjugador',function(jugador){
     //coloco el tanque
     jugadores.push(jugador);
-    jugadorActual = jugador;
     let posicionX = jugador.miTanque.positionX*45;
     let posicionY = jugador.miTanque.positionY*25;
     //todos los tanques son rojos en principio
@@ -144,6 +126,7 @@ socket.on('newjugador',function(jugador){
     // pero miro si el tanque es mio o de otro usurio, para ello comparo el nombre del usuario que es dueño con mi variable "minombre"
     //si es mi tanque lo pinto de azul, y sera el tanque que maneje
     if(jugador.username==minombre) {
+      jugadorActual = jugador;
         color = "blue";
         //elimino el div del login, ya no me interesa poder introducir mas tanques con ese usuario
         $("#login").empty();
@@ -156,29 +139,55 @@ socket.on('newjugador',function(jugador){
 
 //parte que envia desde cliente al server el movimiento y quien lo debe hacer
 var direccion = 69;
+
+
+
+
 document.addEventListener('keydown',presionar);
+
 function presionar(e){
-  if(e.keyCode === 87){
-      direccion = 2;
-      socket.emit("direccion",direccion,jugadorActual);
-      console.log(direccion);
-  }
-  if(e.keyCode === 68){
-      direccion = 0;
-      socket.emit("direccion",direccion,jugadorActual);
-      console.log(direccion);
-  }
-  if(e.keyCode === 83){
-      direccion = 3;
-      socket.emit("direccion",direccion,jugadorActual);
-      console.log(direccion);
-  }
-  if(e.keyCode === 65){
-      direccion = 1;
-      socket.emit("direccion",direccion,jugadorActual);
-      console.log(direccion);
+
+  if( jugadorActual!= null) {
+    if(e.keyCode === 87){
+      arriba = true;
+      if(arriba==true){
+        direccion = 2;
+        socket.emit("direccion",direccion,jugadorActual);
+  
+        console.log(jugadorActual.username);
+      }
+    }
+    if(e.keyCode === 68){
+      dch = true;
+      if(dch==true){
+        direccion = 0;
+        socket.emit("direccion",direccion,jugadorActual);
+  
+        console.log(jugadorActual.username);
+      }
+    }
+    if(e.keyCode === 83){
+      abajo = true;
+      if(abajo==true){
+        direccion = 3;
+        socket.emit("direccion",direccion,jugadorActual);
+  
+        console.log(jugadorActual.username);
+      }
+    }
+    if(e.keyCode === 65){
+      izq = true;
+      if(izq==true){
+        direccion = 1;
+        socket.emit("direccion",direccion,jugadorActual);
+  
+        console.log(jugadorActual.username);
+      }
+    }
+
 
   }
+  
 }
 var direccionT = 69;
 document.addEventListener('keydown',presionarTorreta);
@@ -203,6 +212,7 @@ function presionarTorreta(e){
       console.log(direccionT);
       socket.emit("direccionT",direccionT,jugadorActual);
   }
+  
 }
 document.addEventListener('keydown',presionaDispara);
 function presionaDispara(e){
@@ -210,4 +220,5 @@ function presionaDispara(e){
     dispara();
     console.log("Dispara");
   }
+  
 }

@@ -18,6 +18,8 @@ async function sleep(millis) {
     return new Promise(resolve => setTimeout(resolve, millis));
 }
 
+/////////
+//Envia datos del tablero cada 150ms al cliente
 async function enviaTablero(){
     while(true){
         io.emit('actualizaTablero',tablero);
@@ -25,6 +27,11 @@ async function enviaTablero(){
     }
 }
 enviaTablero();
+
+////////
+
+
+
 //traigo esquema de datos de usuario
 const Usuario = require('../models/usuario');
 //Creamos el tablero. Aqui se almacenaran los tanques

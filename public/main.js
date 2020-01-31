@@ -114,6 +114,7 @@ socket.on('ContraseñaIncorrecta',function(){
 function mueveTanque(tanque) {
 
   $(`#tanque-${tanque.nombre}`).remove();
+  $(`#tanque-${jugadorActual.username}`).remove();
   let posicionX = tanque.positionX*45;
   let posicionY = tanque.positionY*25;
   //todos los tanques son rojos en principio

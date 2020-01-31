@@ -86,17 +86,18 @@ function mueveTanque(tanque) {
 
   let posicionX = tanque.positionX*45;
   let posicionY = tanque.positionY*25;
+  let direccion = dameLetra(tanque.posicionCanon);
   //todos los tanques son rojos en principio
-  let color = "red";
+  let color = "r";
   // pero miro si el tanque es mio o de otro usurio, para ello comparo el nombre del usuario que es dueño con mi variable "minombre"
   //si es mi tanque lo pinto de azul, y sera el tanque que maneje
   if(tanque.nombre==minombre) {
-      color = "blue";
+      color = "b";
       //elimino el div del login, ya no me interesa poder introducir mas tanques con ese usuario
       $("#login").empty();
-      $("#tablero").append(`<div class="tanque" id="tanque-${tanque.nombre}" style="position: absolute; top: ${posicionY}px; left: ${posicionX}px; width: 45px; height: 25px;"><img src="tank/ab.png"></img> </div>`);
+      $("#tablero").append(`<div class="tanque" id="tanque-${tanque.nombre}" style="position: absolute; top: ${posicionY}px; left: ${posicionX}px; width: 45px; height: 25px;"><img src="tank/${color}${direccion}.png"></img> </div>`);
   }else{
-      $("#tablero").append(`<div class="tanque" id="tanque-${tanque.nombre}" style="position: absolute; top: ${posicionY}px; left: ${posicionX}px; width: 45px; height: 25px;"><img src="tank/rb.png"></img> </div>`);
+      $("#tablero").append(`<div class="tanque" id="tanque-${tanque.nombre}" style="position: absolute; top: ${posicionY}px; left: ${posicionX}px; width: 45px; height: 25px;"><img src="tank/${color}${direccion}.png"></img> </div>`);
   }
 }
 function mostrarUsuarios(usuarios){
@@ -112,23 +113,45 @@ socket.on('newjugador',function(jugador){
     //coloco el tanque
     jugadores.push(jugador);
     let posicionX = jugador.miTanque.positionX*45;
+    let direccion = dameLetra(jugador.miTanque.posicionCanon);
     let posicionY = jugador.miTanque.positionY*25;
     //todos los tanques son rojos en principio
-    let color = "red";
+    let color = "r";
     // pero miro si el tanque es mio o de otro usurio, para ello comparo el nombre del usuario que es dueño con mi variable "minombre"
     //si es mi tanque lo pinto de azul, y sera el tanque que maneje
     if(jugador.username==minombre) {
       jugadorActual = jugador;
-        color = "blue";
+        color = "b";
         //elimino el div del login, ya no me interesa poder introducir mas tanques con ese usuario
         $("#login").empty();
-        $("#tablero").append(`<div class="tanque" id="tanque-${jugador.username}" style="position: absolute; top: ${posicionY}px; left: ${posicionX}px; width: 45px; height: 25px;"><img src="tank/ab.png"></img> </div>`);
+        $("#tablero").append(`<div class="tanque" id="tanque-${jugador.username}" style="position: absolute; top: ${posicionY}px; left: ${posicionX}px; width: 45px; height: 25px;"><img src=tank/${color}${direccion}.png"></img> </div>`);
     }else{
-        $("#tablero").append(`<div class="tanque" id="tanque-${jugador.username}" style="position: absolute; top: ${posicionY}px; left: ${posicionX}px; width: 45px; height: 25px;"><img src="tank/rb.png"></img> </div>`);
+        $("#tablero").append(`<div class="tanque" id="tanque-${jugador.username}" style="position: absolute; top: ${posicionY}px; left: ${posicionX}px; width: 45px; height: 25px;"><img src="tank/${color}${direccion}.png"></img> </div>`);
     }
 
 });
+function dameLetra(posicionCanon){
+  var direccion = "";
+  switch(posicionCanon){
+    case 0:
+      direccion="r";
+      break;
+    case 1:
+      direccion="l";
+      break;
+    case 2:
+      direccion="u";
+      break;
+    case 3:
+      direccion="d";
+      break;
+    default:
+      direccion="r";
+      break;
+  }
+  return direccion;
 
+}
 //parte que envia desde cliente al server el movimiento y quien lo debe hacer
 var direccion = 69;
 //este event listener se encarga de detectar las teclas para el movimiento del tanque

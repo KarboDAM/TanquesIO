@@ -65,32 +65,7 @@ function dibujaBala(bala){
     console.log(posicionX);
 }
 
-socket.on('balaVa', function(jugador){
-    console.log(jugador);
 
-    for ( let i=0; i<jugadores.length; i++ ) {
-      if(jugador.username == jugadores[i].username && jugador.username == minombre){
-        jugadorActual = jugadores[i];
-      }
-
-    }
-
-    $(`#bala-${jugador.username}`).remove();
-    let posicionX = jugador.miTanque.bala.posX*45;
-    let posicionY = jugador.miTanque.bala.posY*25;
-    //todos los tanques son rojos en principio
-    let color = "red";
-    // pero miro si el tanque es mio o de otro usurio, para ello comparo el nombre del usuario que es dueño con mi variable "minombre"
-    //si es mi tanque lo pinto de azul, y sera el tanque que maneje
-    if(jugador.username==minombre) {
-        color = "blue";
-        //elimino el div del login, ya no me interesa poder introducir mas tanques con ese usuario
-    }
-
-    $("#tablero").append(`<div class="bala" id="bala-${jugador.username}" style="position: absolute; top: ${posicionY}px; left: ${posicionX}px; border-radius:50%; width: 25px; height: 25px;background-color: ${color}"> </div>`);
-
-    console.log(posicionX);
-});
 //
 socket.on('datosusuarios',function(usuarios){
     mostrarUsuarios(usuarios);

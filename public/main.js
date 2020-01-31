@@ -163,10 +163,6 @@ socket.on('newjugador',function(jugador){
 });
 
 //parte que envia desde cliente al server el movimiento y quien lo debe hacer
-var arriba = false;
-var abajo = false;
-var izq = false;
-var dch = false;
 var direccion = 69;
 
 
@@ -218,121 +214,36 @@ function presionar(e){
   }
   
 }
-document.addEventListener('keyup',soltar);
-function soltar(e){
-
-  if( jugadorActual != null ) {
-    if(e.keyCode === 87){
-      arriba = false;
-      if(arriba==false){
-        direccion = 69;
-        console.log(jugadorActual);
-      }
-    }
-    if(e.keyCode === 68){
-      dch = false;
-      if(dch==false){
-        direccion = 69;
-        console.log(jugadorActual);
-      }
-    }
-    if(e.keyCode === 83){
-      abajo = false;
-      if(abajo==false){
-        direccion = 69;
-        console.log(jugadorActual);
-      }
-    }
-    if(e.keyCode === 65){
-      izq = false;
-      if(izq==false){
-        direccion = 69;
-        console.log(jugadorActual);
-      }
-    }
-
-  }
-  
-}
-var arribaT = false;
-var abajoT = false;
-var izqT = false;
-var dchT = false;
 var direccionT = 69;
 document.addEventListener('keydown',presionarTorreta);
 function presionarTorreta(e){
-
-  if( jugadorActual != null ) {
-    if(e.keyCode === 38){
-      arribaT = true;
-      if(arribaT==true){
-        direccionT = 2;
-        console.log(direccionT);
-        socket.emit("direccionT",direccionT,jugadorActual);
-      }
-    }
-    if(e.keyCode === 39){
-      dchT=true;
-      if(dchT==true){
-        direccionT = 0;
-        console.log(direccionT);
-        socket.emit("direccionT",direccionT,jugadorActual);
-      }
-    }
-    if(e.keyCode === 40){
-      abajoT=true;
-      if(abajoT==true){
-        direccionT = 3;
-        console.log(direccionT);
-        socket.emit("direccionT",direccionT,jugadorActual);
-      }
-    }
-    if(e.keyCode === 37){
-      izqT=true;
-      if(izqT==true){
-        direccionT = 1;
-        console.log(direccionT);
-        socket.emit("direccionT",direccionT,jugadorActual);
-      }
-    }
-
+  if(e.keyCode === 38){
+      direccionT = 2;
+      console.log(direccionT);
+      socket.emit("direccionT",direccionT,jugadorActual);
+  }
+  if(e.keyCode === 39){
+      direccionT = 0;
+      console.log(direccionT);
+      socket.emit("direccionT",direccionT,jugadorActual);
+  }
+  if(e.keyCode === 40){
+      direccionT = 3;
+      console.log(direccionT);
+      socket.emit("direccionT",direccionT,jugadorActual);
+  }
+  if(e.keyCode === 37){
+      direccionT = 1;
+      console.log(direccionT);
+      socket.emit("direccionT",direccionT,jugadorActual);
   }
   
 }
-document.addEventListener('keyup',soltarTorreta);
-function soltarTorreta(e){
-
-  if( jugadorActual != null ) {
-
-    if(e.keyCode === 38){
-      arribaT = false;
-      if(arribaT==false){
-        direccionT = 69;
-        console.log(direccionT);
-      }
-    }
-    if(e.keyCode === 39){
-      dchT=false;
-      if(dchT==false){
-        direccionT = 69;
-        console.log(direccionT);
-      }
-    }
-    if(e.keyCode === 40){
-      abajoT=false;
-      if(abajoT==false){
-        direccionT = 69;
-        console.log(direccionT);
-      }
-    }
-    if(e.keyCode === 37){
-      izqT=false;
-      if(izq==false){
-        direccionT = 69;
-        console.log(direccionT);
-      }
-    }
-
+document.addEventListener('keydown',presionaDispara);
+function presionaDispara(e){
+  if(e.keyCode === 32){
+    dispara();
+    console.log("Dispara");
   }
   
 }

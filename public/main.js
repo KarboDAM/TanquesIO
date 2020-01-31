@@ -139,58 +139,37 @@ socket.on('newjugador',function(jugador){
 
 //parte que envia desde cliente al server el movimiento y quien lo debe hacer
 var direccion = 69;
-
-
-
-
+//este event listener se encarga de detectar las teclas para el movimiento del tanque
 document.addEventListener('keydown',presionar);
-
+//en esta funcion cambiamos el valor de la variable direccion para el movimiento del tanque
 function presionar(e){
-
   if( jugadorActual!= null) {
     if(e.keyCode === 87){
-      arriba = true;
-      if(arriba==true){
         direccion = 2;
         socket.emit("direccion",direccion,jugadorActual);
-  
         console.log(jugadorActual.username);
-      }
     }
     if(e.keyCode === 68){
-      dch = true;
-      if(dch==true){
         direccion = 0;
         socket.emit("direccion",direccion,jugadorActual);
-  
         console.log(jugadorActual.username);
-      }
     }
     if(e.keyCode === 83){
-      abajo = true;
-      if(abajo==true){
         direccion = 3;
         socket.emit("direccion",direccion,jugadorActual);
-  
         console.log(jugadorActual.username);
-      }
     }
     if(e.keyCode === 65){
-      izq = true;
-      if(izq==true){
         direccion = 1;
         socket.emit("direccion",direccion,jugadorActual);
-  
         console.log(jugadorActual.username);
-      }
     }
-
-
   }
-  
 }
 var direccionT = 69;
+//este event listener se encarga de detectar las teclas para el movimiento de la torreta para disparar
 document.addEventListener('keydown',presionarTorreta);
+//en esta funcion cambiamos el valor de la variable direccionT (que es la variable de de la direccion de la torreta) dependiendo de la tecla que se pulse
 function presionarTorreta(e){
   if(e.keyCode === 38){
       direccionT = 2;
@@ -212,13 +191,15 @@ function presionarTorreta(e){
       console.log(direccionT);
       socket.emit("direccionT",direccionT,jugadorActual);
   }
-  
+
 }
+//este event listener se encarga de detectar la barra espaciadora para realizar el disparo
 document.addEventListener('keydown',presionaDispara);
+//en la funcion simplemente llamamos a la function dispara
 function presionaDispara(e){
   if(e.keyCode === 32){
     dispara();
     console.log("Dispara");
   }
-  
+
 }

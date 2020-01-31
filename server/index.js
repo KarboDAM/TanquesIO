@@ -19,11 +19,11 @@ async function sleep(millis) {
 }
 
 /////////
-//Envia datos del tablero cada 150ms al cliente
+//Envia datos del tablero cada 150ms a cliente
 async function enviaTablero(){
     while(true){
         io.emit('actualizaTablero',tablero);
-        await sleep(150);
+        await sleep(50);
     }
 }
 enviaTablero();
@@ -349,7 +349,7 @@ class Tanque {
     }
     dispara =async function() {
         console.log("Disparando");
-        this.bala=new Bala(this.positionX,this.positionY,this.posicionCanon,this.nombre);
+        new Bala(this.positionX,this.positionY,this.posicionCanon,this.nombre);
     }
     /*
         Llama al metodo movimiento dependiendo del parametro.

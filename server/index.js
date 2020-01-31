@@ -19,11 +19,11 @@ async function sleep(millis) {
 }
 
 /////////
-//Envia datos del tablero cada 150ms al cliente
+//Envia datos del tablero cada 150ms a cliente
 async function enviaTablero(){
     while(true){
         io.emit('actualizaTablero',tablero);
-        await sleep(150);
+        await sleep(50);
     }
 }
 enviaTablero();
@@ -526,7 +526,11 @@ class Canon{
 
     dispara=function(positionX,positionY,posicionCanon,nombre){
         if(this.contadorBalas<this.tamanoCargador){
-            this.balasJuego[this.contadorBalas]=new Bala(positionX,positionY,posicionCanon,nombre);
+            this.balasJuego[this.contadorBalas]=new Bala(positionX,positionY,
+                posicionCanon,nombre);
+            this.contadorBalas++;
         }
+        else
+            this.contadorBalas=0;
     }
 }

@@ -54,19 +54,17 @@ function dibujaBala(bala){
     let posicionY = bala.posY*25;
     //todos los tanques son rojos en principio
     let color = "red";
-    // pero miro si el tanque es mio o de otro usurio, para ello comparo el nombre del usuario que es dueño con mi variable "minombre"
+    // pero miro si el tanque es mio o de otro usurio, 
+    //para ello comparo el nombre del usuario que es dueño con mi variable "minombre"
     //si es mi tanque lo pinto de azul, y sera el tanque que maneje
     if(bala.nombre==minombre) {
         color = "blue";
-        //elimino el div del login, ya no me interesa poder introducir mas tanques con ese usuario
     }
 
-    $("#tablero").append(`<div class="bala" id="bala-${bala.nombre}" style="position: absolute; top: ${posicionY}px; left: ${posicionX}px; border-radius:50%; width: 25px; height: 25px;background-color: ${color}"> </div>`);
-
-    console.log(posicionX);
+    $("#tablero").append(`<div class="bala" id="bala-${bala.nombre}" 
+      style="position: absolute; top: ${posicionY}px; left: ${posicionX}px; 
+      border-radius:50%; width: 25px; height: 25px; background-color: ${color}"> </div>`);
 }
-
-
 //
 socket.on('datosusuarios',function(usuarios){
     mostrarUsuarios(usuarios);
@@ -76,9 +74,6 @@ socket.on('datosusuarios',function(usuarios){
 socket.on('mueveTanque',function(jugador){
     mueveTanque(jugador);
 });
-
-
-
 
 socket.on('yaestasjugando',function(){
     alert("Ya estas jugando en otro cliente chaval!");
@@ -103,8 +98,6 @@ function mueveTanque(tanque) {
   }else{
       $("#tablero").append(`<div class="tanque" id="tanque-${tanque.nombre}" style="position: absolute; top: ${posicionY}px; left: ${posicionX}px; width: 45px; height: 25px;"><img src="tank/rb.png"></img> </div>`);
   }
-
-
 }
 function mostrarUsuarios(usuarios){
 
@@ -165,11 +158,17 @@ function presionar(e){
     }
   }
 }
-var direccionT = 69;
-//este event listener se encarga de detectar las teclas para el movimiento de la torreta para disparar
+//Este event listener se encarga de detectar las teclas 
+//para el movimiento de la torreta al disparar
 document.addEventListener('keydown',presionarTorreta);
-//en esta funcion cambiamos el valor de la variable direccionT (que es la variable de de la direccion de la torreta) dependiendo de la tecla que se pulse
+/*
+  En esta funcion cambiamos la direccion de la torreta dependiendo de la tecla que se pulse
+  @params:
+    e -> TeclaPulsada.
+*/
 function presionarTorreta(e){
+  let direccionT = 69;
+
   if(e.keyCode === 38){
       direccionT = 2;
       console.log(direccionT);

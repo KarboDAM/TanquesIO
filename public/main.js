@@ -103,16 +103,7 @@ socket.on('ContraseñaIncorrecta',function(){
     alert("Contraseña Incorrecta!");
 });
 
-<<<<<<< Updated upstream
 function mueveTanque(tanque) {
-=======
-
-
-
-
-function mueveTanque(jugador,direccionT) {
-    jugadorActual = jugador;
->>>>>>> Stashed changes
 
   $(`#tanque-${tanque.nombre}`).remove();
   let posicionX = tanque.positionX*45;
@@ -153,7 +144,6 @@ function mueveTanque(jugador,direccionT) {
   }
   // pero miro si el tanque es mio o de otro usurio, para ello comparo el nombre del usuario que es dueño con mi variable "minombre"
   //si es mi tanque lo pinto de azul, y sera el tanque que maneje
-<<<<<<< Updated upstream
   if(tanque.nombre==minombre) {
       color = "blue";
       //elimino el div del login, ya no me interesa poder introducir mas tanques con ese usuario
@@ -161,15 +151,6 @@ function mueveTanque(jugador,direccionT) {
       $("#tablero").append(`<div class="tanque" id="tanque-${tanque.nombre}" style="position: absolute; top: ${posicionY}px; left: ${posicionX}px; width: 45px; height: 25px;"><img src="tank/ab.png"></img> </div>`);
   }else{
       $("#tablero").append(`<div class="tanque" id="tanque-${tanque.nombre}" style="position: absolute; top: ${posicionY}px; left: ${posicionX}px; width: 45px; height: 25px;"><img src="tank/rb.png"></img> </div>`);
-=======
-  if(jugador.username==minombre) {
-      color = "b";
-      //elimino el div del login, ya no me interesa poder introducir mas tanques con ese usuario
-      $("#login").empty();
-      $("#tablero").append(`<div class="tanque" id="tanque-${jugador.username}" style="position: absolute; top: ${posicionY}px; left: ${posicionX}px; width: 45px; height: 25px;"><img src="tank/${color}${direccion}.png"></img> </div>`);
-  }else{
-      $("#tablero").append(`<div class="tanque" id="tanque-${jugador.username}" style="position: absolute; top: ${posicionY}px; left: ${posicionX}px; width: 45px; height: 25px;"><img src="tank/${color}${direccion}.png"></img> </div>`);
->>>>>>> Stashed changes
   }
 
 

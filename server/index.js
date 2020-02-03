@@ -2,7 +2,7 @@
 var express = require('express');
 var app = express();
 var server = require('http').Server(app);
-//
+//Necesario para el envio de info cliente/server.
 var io = require('socket.io')(server);
 // npm i -S -body-parser ===>
 //Instalamos una libreria que nos permite todos esos mensajes de tipo res (como los POST), parsearslos, tratar y recogerlos
@@ -13,23 +13,30 @@ const mongoose = require('mongoose');
 let usuariosbd = [];
 let jugadores = [];
 
+/*
+    Duerme un hilo durante los ms pasados por parametro.
+    @param:
+        millis -> numero de ms que quieres dormir el hilo.
+    @return:
+        Objeto Promise que duerme el hilo.
+*/
 async function sleep(millis) {
     return new Promise(resolve => setTimeout(resolve, millis));
 }
 
-/////////
-//Envia datos del tablero cada 150ms a cliente
-async function enviaTablero(){
+/*
+    Envia el tablero al cliente cada x tiempo definido por parametro.
+    @param:
+        tiempoCarga el intervalo de actualizacion del tablero en ms.
+*/
+async function enviaTablero(tiempoCarga){
     while(true){
         io.emit('actualizaTablero',tablero);
-        await sleep(50);
+        await sleep();
     }
 }
-enviaTablero();
 
-////////
-
-
+enviaTablero(50);
 
 //traigo esquema de datos de usuario
 const Usuario = require('../models/usuario');
@@ -42,11 +49,6 @@ for (var i = 0; i < tablero.length; i++) {
 
 //Lo hizo un mago, no tocar.
 mongoose.set('useFindAndModify', false);
-
-//TODO: Mirar si sobra.
-//añadimos esas capas a nuestro server express
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
 
 //middelwhere? express donde le indicamos la parte publica que queremos que sea estatica
 app.use(express.static('public'));
@@ -109,7 +111,16 @@ io.sockets.on('connection', function(socket){
       if(jugadores[i].username==jugador.username) {
         jugadores[i].miTanque.mueve(direccion);
 
-      }
+    socket.on('direccion',function(direccion,jugador){
+        for( let i=0; i<jugadores.length; i++) {
+          if(jugadores[i].username==jugador.username) {
+                jugadorActual = jugadores[i];
+                jugadores[i].miTanque.mueve(direccion);
+            }
+        }
+        //Jugador.miTanque.mueve(direccion);
+        console.log(`Recibiendo datos movimiento ${direccion}`);
+    });
 
     }
     //Jugador.miTanque.mueve(direccion);
@@ -203,7 +214,6 @@ function accederJuego(jugador) {
     io.emit('newjugador',jugador);
 }
 
-
 //Magia negra del final, no tocar.
 server.listen( 8080, function () {
     console.log('servidor corriendo');
@@ -222,16 +232,14 @@ class Jugador {
 
 class Tanque {
     constructor(username) {
-        let posiciones=generaPosicion();
+        this.vidas=2;
+        this.tipo="Tanque";
         this.nombre=username;
+        this.canon=new Canon(4,4000);
+        this.posicionCanon=0;
+        let posiciones=generaPosicion();
         this.positionX=posiciones[0];
         this.positionY=posiciones[1];
-        this.retraso=3;
-        this.vidas=2;
-        this.posicionCanon=0;
-        this.horaUltimoDisparo;
-        this.tipo="Tanque";
-        this.canon=new Canon(3);
         this.actualizaPosicion();
 
         /*
@@ -343,6 +351,10 @@ class Tanque {
     actualizaPosicion=function(){
         tablero[this.positionX][this.positionY]=this;
     }
+    /*
+        Verifica que tiene municion y dispara.
+        Usa el objeto canon para disparar (Ver objeto canon para mas info).
+    */
     dispara =async function() {
         this.canon.dispara(this.positionX,this.positionY,this.posicionCanon,this.nombre);
     }
@@ -389,6 +401,14 @@ class Tanque {
     }
 };
 
+/*
+    Objeto que se encarga de destruir los tanques.
+    @params:
+        posX -> Posicion X inicial de la bala.
+        posY -> Posicion Y inicial de la bala.
+        posicionCanon -> Direccion de la bala.
+        nombre -> nombre de la bala.
+*/
 class Bala {
 
     constructor(posX,posY,posicionCanon,nombre) {
@@ -513,20 +533,36 @@ class Bala {
     }
 };
 
+/*
+    Objeto Canon que se encarga de la gestion de las balas.
+    @param:
+        tamanoCargador -> Cuantas balas puede disparar antes de recargar.
+        tiempoRecarga -> Tiempo que tardara en recargar en ms.
+*/
 class Canon{
-    constructor(tamanoCargador){
-        this.tamanoCargador=tamanoCargador;
-        this.balasJuego=new Array(tamanoCargador);
+    constructor(tamanoCargador,tiempoRecarga){
         this.contadorBalas=0;
+        this.tamanoCargador=tamanoCargador;
+        this.tiempoRecarga=tiempoRecarga;
     }
 
     dispara=function(positionX,positionY,posicionCanon,nombre){
         if(this.contadorBalas<this.tamanoCargador){
-            this.balasJuego[this.contadorBalas]=new Bala(positionX,positionY,
-                posicionCanon,nombre);
+            console.log("bala numero "+this.contadorBalas);
             this.contadorBalas++;
+            new Bala(positionX,positionY,posicionCanon,nombre);
         }
-        else
-            this.contadorBalas=0;
+        else{
+            this.recarga();
+        }
     }
-}
+
+    recarga=function(){
+        //No funcionaban ninguna de las formas que tenia de dormir/esperar el metodo
+        //Hacerlo de forma async no era una solucion porque si los hilos se lanzan rapido
+        //no da tiempo a que la variable vuelva a 0 y dispara demasiado.
+        let cont = 0;
+        while(cont<this.tiempoRecarga){cont++;}
+        this.contadorBalas=0;
+    }
+};

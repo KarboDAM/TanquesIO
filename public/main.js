@@ -106,6 +106,7 @@ socket.on('ContraseñaIncorrecta',function(){
 function mueveTanque(tanque) {
 
   $(`#tanque-${tanque.nombre}`).remove();
+  $(`#tanque-${jugadorActual.username}`).remove();
   let posicionX = tanque.positionX*45;
   let posicionY = tanque.positionY*25;
   //todos los tanques son rojos en principio
@@ -215,129 +216,83 @@ socket.on('newjugador',function(jugador){
 });
 
 //parte que envia desde cliente al server el movimiento y quien lo debe hacer
-var arriba = false;
-var abajo = false;
-var izq = false;
-var dch = false;
 var direccion = 69;
 document.addEventListener('keydown',presionar);
 function presionar(e){
   if(e.keyCode === 87){
-    arriba = true;
-    if(arriba==true){
       direccion = 2;
       //var tanque = document.getElementById("tanque-"+jugadorActual.username).innerHTML="";
       //$("#tablero").append(`<div class="tanque" id="tanque-${jugadorActual}" style="position: absolute; top: ${jugadorActual.miTanque.posicionY}px; left: ${jugadorActual.miTanque.posicionX}px; width: 45px; height: 25px;"><img src="tank/au.png"></img> </div>`);
       //$("tanque-"+jugadorActual.username).load("<img src='imagenes/au.png'>");
       socket.emit("direccion",direccion,jugadorActual);
+<<<<<<< HEAD
       
       console.log(direccion);
       console.log(jugadorActual);
     }
+=======
+      console.log(direccion);
+>>>>>>> master
   }
   if(e.keyCode === 68){
-    dch = true;
-    if(dch==true){
       direccion = 0;
       socket.emit("direccion",direccion,jugadorActual);
-
       console.log(direccion);
-    }
   }
   if(e.keyCode === 83){
-    abajo = true;
-    if(abajo==true){
       direccion = 3;
       socket.emit("direccion",direccion,jugadorActual);
-
       console.log(direccion);
-    }
   }
   if(e.keyCode === 65){
-    izq = true;
-    if(izq==true){
       direccion = 1;
       socket.emit("direccion",direccion,jugadorActual);
+      console.log(direccion);
 
-      console.log(direccion);
-    }
   }
 }
-document.addEventListener('keyup',soltar);
-function soltar(e){
-  if(e.keyCode === 87){
-    arriba = false;
-    if(arriba==false){
-      direccion = 69;
-      console.log(direccion);
-    }
-  }
-  if(e.keyCode === 68){
-    dch = false;
-    if(dch==false){
-      direccion = 69;
-      console.log(direccion);
-    }
-  }
-  if(e.keyCode === 83){
-    abajo = false;
-    if(abajo==false){
-      direccion = 69;
-      console.log(direccion);
-    }
-  }
-  if(e.keyCode === 65){
-    izq = false;
-    if(izq==false){
-      direccion = 69;
-      console.log(direccion);
-    }
-  }
-}
-var arribaT = false;
-var abajoT = false;
-var izqT = false;
-var dchT = false;
 var direccionT = 69;
 document.addEventListener('keydown',presionarTorreta);
 function presionarTorreta(e){
   if(e.keyCode === 38){
-    arribaT = true;
-    if(arribaT==true){
       direccionT = 2;
       console.log(direccionT);
       socket.emit("direccionT",direccionT,jugadorActual);
+<<<<<<< HEAD
       mueveTanque(jugadorActual,direccionT);
     }
+=======
+>>>>>>> master
   }
   if(e.keyCode === 39){
-    dchT=true;
-    if(dchT==true){
       direccionT = 0;
       console.log(direccionT);
       socket.emit("direccionT",direccionT,jugadorActual);
+<<<<<<< HEAD
       mueveTanque(jugadorActual,direccionT);
 
 
     }
+=======
+>>>>>>> master
   }
   if(e.keyCode === 40){
-    abajoT=true;
-    if(abajoT==true){
       direccionT = 3;
       console.log(direccionT);
       socket.emit("direccionT",direccionT,jugadorActual);
+<<<<<<< HEAD
       mueveTanque(jugadorActual,direccionT);
 
 
     }
+=======
+>>>>>>> master
   }
   if(e.keyCode === 37){
-    izqT=true;
-    if(izqT==true){
       direccionT = 1;
       console.log(direccionT);
       socket.emit("direccionT",direccionT,jugadorActual);
+<<<<<<< HEAD
       mueveTanque(jugadorActual,direccionT);
 
 
@@ -381,5 +336,14 @@ function soltarTorreta(e){
 
 
     }
+=======
+  }
+}
+document.addEventListener('keydown',presionaDispara);
+function presionaDispara(e){
+  if(e.keyCode === 32){
+    dispara();
+    console.log("Dispara");
+>>>>>>> master
   }
 }

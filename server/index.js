@@ -13,6 +13,14 @@ const mongoose = require('mongoose');
 let usuariosbd = [];
 let jugadores = [];
 let jugadorActual = null;
+//traigo esquema de datos de usuario
+const Usuario = require('../models/usuario');
+//Creamos el tablero. Aqui se almacenaran los tanques
+var tamanoTablero=20;
+var tablero=new Array(tamanoTablero);
+for (var i = 0; i < tablero.length; i++) {
+    tablero[i]=new Array(tamanoTablero);
+}
 
 /*
     Duerme un hilo durante los ms pasados por parametro.
@@ -38,15 +46,6 @@ async function enviaTablero(tiempoCarga){
 }
 
 enviaTablero(50);
-
-//traigo esquema de datos de usuario
-const Usuario = require('../models/usuario');
-//Creamos el tablero. Aqui se almacenaran los tanques
-var tamanoTablero=20;
-var tablero=new Array(tamanoTablero);
-for (var i = 0; i < tablero.length; i++) {
-    tablero[i]=new Array(tamanoTablero);
-}
 
 //Lo hizo un mago, no tocar.
 mongoose.set('useFindAndModify', false);

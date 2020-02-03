@@ -118,20 +118,11 @@ function mostrarUsuarios(usuarios){
 socket.on('newjugador',function(jugador){
     //coloco el tanque
     jugadores.push(jugador);
-    let posicionX = jugador.miTanque.positionX*45;
-    let posicionY = jugador.miTanque.positionY*25;
     //todos los tanques son rojos en principio
-    let color = "red";
     // pero miro si el tanque es mio o de otro usurio, para ello comparo el nombre del usuario que es dueño con mi variable "minombre"
     //si es mi tanque lo pinto de azul, y sera el tanque que maneje
     if(jugador.username==minombre) {
       jugadorActual = jugador;
-        color = "blue";
-        //elimino el div del login, ya no me interesa poder introducir mas tanques con ese usuario
-        $("#login").empty();
-        $("#tablero").append(`<div class="tanque" id="tanque-${jugador.username}" style="position: absolute; top: ${posicionY}px; left: ${posicionX}px; width: 45px; height: 25px;"><img src="tank/ab.png"></img> </div>`);
-    }else{
-        $("#tablero").append(`<div class="tanque" id="tanque-${jugador.username}" style="position: absolute; top: ${posicionY}px; left: ${posicionX}px; width: 45px; height: 25px;"><img src="tank/rb.png"></img> </div>`);
     }
 
 });

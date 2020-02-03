@@ -12,7 +12,6 @@ const mongoose = require('mongoose');
 //variables globales donde almaceno los jugadores...
 let usuariosbd = [];
 let jugadores = [];
-let jugadorActual = null;
 
 async function sleep(millis) {
     return new Promise(resolve => setTimeout(resolve, millis));
@@ -94,8 +93,7 @@ io.sockets.on('connection', function(socket){
     socket.on('dispara', function(jugador){
         console.log("recibo disparo con el jugador en server");
         for(let i=0; i<jugadores.length; i++) {
-            if(jugadores[i].username=jugador.username) {
-                jugadorActual = jugadores[i];
+            if(jugadores[i].username==jugador.username) {
                 console.log(jugadores[i].miTanque);
                 jugadores[i].miTanque.dispara();
             }
@@ -109,7 +107,6 @@ io.sockets.on('connection', function(socket){
   socket.on('direccion',function(direccion,jugador){
     for ( let i=0; i<jugadores.length; i++) {
       if(jugadores[i].username==jugador.username) {
-        jugadorActual = jugadores[i];
         jugadores[i].miTanque.mueve(direccion);
 
       }
@@ -122,7 +119,6 @@ io.sockets.on('connection', function(socket){
   socket.on('direccionT',function(direccionT,jugador){
     for(let i=0; i<jugadores.length;i++){
       if(jugadores[i].username==jugador.username){
-        jugadorActual = jugadores[i];
         jugadores[i].miTanque.mueveTorreta(direccionT);
       }
     }

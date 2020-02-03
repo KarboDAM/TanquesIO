@@ -110,30 +110,19 @@ io.sockets.on('connection', function(socket){
     for ( let i=0; i<jugadores.length; i++) {
       if(jugadores[i].username==jugador.username) {
         jugadores[i].miTanque.mueve(direccion);
-
-    socket.on('direccion',function(direccion,jugador){
-        for( let i=0; i<jugadores.length; i++) {
-          if(jugadores[i].username==jugador.username) {
-                jugadorActual = jugadores[i];
-                jugadores[i].miTanque.mueve(direccion);
             }
         }
         //Jugador.miTanque.mueve(direccion);
         console.log(`Recibiendo datos movimiento ${direccion}`);
     });
 
-    }
-    //Jugador.miTanque.mueve(direccion);
-    console.log(`Recibiendo datos movimiento ${direccion}`);
-  });
-
-  socket.on('direccionT',function(direccionT,jugador){
-    for(let i=0; i<jugadores.length;i++){
-      if(jugadores[i].username==jugador.username){
-        jugadores[i].miTanque.mueveTorreta(direccionT);
-      }
-    }
-  });
+    socket.on('direccionT',function(direccionT,jugador){
+        for(let i=0; i<jugadores.length;i++){
+          if(jugadores[i].username==jugador.username){
+            jugadores[i].miTanque.mueveTorreta(direccionT);
+          }
+        }
+    });
 
     //Crea un usuario, lo registra en la BD y lo envia al cliente con la clave 'newJugador'.
 	socket.on('datosLogin', function(datosLogin){

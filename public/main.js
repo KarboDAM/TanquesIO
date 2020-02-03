@@ -117,8 +117,6 @@ socket.on('newjugador',function(jugador){
     }
 
 });
-
-//metodo para segun la posicion de cañon escojer una imagen u otra para pintar en el juego
 function dameLetra(posicionCanon){
   var direccion = "";
   switch(posicionCanon){
@@ -141,9 +139,37 @@ function dameLetra(posicionCanon){
   return direccion;
 
 }
-
-
 //parte que envia desde cliente al server el movimiento y quien lo debe hacer
+var direccion = 69;
+//este event listener se encarga de detectar las teclas para el movimiento del tanque
+document.addEventListener('keydown',presionar);
+//en esta funcion cambiamos el valor de la variable direccion para el movimiento del tanque
+function presionar(e){
+  if( jugadorActual!= null) {
+    if(e.keyCode === 87){
+        direccion = 2;
+        socket.emit("direccion",direccion,jugadorActual);
+        console.log(jugadorActual.username);
+    }
+    if(e.keyCode === 68){
+        direccion = 0;
+        socket.emit("direccion",direccion,jugadorActual);
+        console.log(jugadorActual.username);
+    }
+    if(e.keyCode === 83){
+        direccion = 3;
+        socket.emit("direccion",direccion,jugadorActual);
+        console.log(jugadorActual.username);
+    }
+    if(e.keyCode === 65){
+        direccion = 1;
+        socket.emit("direccion",direccion,jugadorActual);
+        console.log(jugadorActual.username);
+    }
+  }
+  return direccion;
+
+}
 //Este event listener se encarga de detectar las teclas 
 //para el movimiento de la torreta al disparar
 document.addEventListener('keydown',presionarTorreta);

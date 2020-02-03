@@ -231,7 +231,7 @@ class Tanque {
         this.posicionCanon=0;
         this.horaUltimoDisparo;
         this.tipo="Tanque";
-        this.bala;
+        this.canon=new Canon(3);
         this.actualizaPosicion();
 
         /*
@@ -344,8 +344,7 @@ class Tanque {
         tablero[this.positionX][this.positionY]=this;
     }
     dispara =async function() {
-        console.log("Disparando");
-        new Bala(this.positionX,this.positionY,this.posicionCanon,this.nombre);
+        this.canon.dispara(this.positionX,this.positionY,this.posicionCanon,this.nombre);
     }
     /*
         Llama al metodo movimiento dependiendo del parametro.
@@ -513,3 +512,21 @@ class Bala {
         }
     }
 };
+
+class Canon{
+    constructor(tamanoCargador){
+        this.tamanoCargador=tamanoCargador;
+        this.balasJuego=new Array(tamanoCargador);
+        this.contadorBalas=0;
+    }
+
+    dispara=function(positionX,positionY,posicionCanon,nombre){
+        if(this.contadorBalas<this.tamanoCargador){
+            this.balasJuego[this.contadorBalas]=new Bala(positionX,positionY,
+                posicionCanon,nombre);
+            this.contadorBalas++;
+        }
+        else
+            this.contadorBalas=0;
+    }
+}
